@@ -1,0 +1,1 @@
+nix.novaextension/CHANGELOG.md
