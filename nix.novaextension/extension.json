@@ -1,0 +1,21 @@
+{
+  "identifier": "hansjhoffman.nix",
+  "name": "Nix",
+  "organization": "@hansjhoffman",
+  "description": "Lorem ipsum, dolor sit amet.",
+  "version": "0.1.0",
+  "categories": ["formatters", "languages"],
+  "license": "MIT",
+  "repository": "https://github.com/hansjhoffman/nova-nix",
+  "bugs": {
+    "url": "https://github.com/hansjhoffman/nova-nix/issues"
+  },
+
+  "activationEvents": ["onLanguage:nix"],
+
+  "entitlements": {},
+
+  "config": [],
+
+  "configWorkspace": []
+}

@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<syntax name="mylang">
+    <meta>
+        <name>Nix</name>
+        <type>structured</type>
+        <preferred-file-extension>nix</preferred-file-extension>
+    </meta>
+    
+    <detectors>
+        <extension priority="1.0">nix</extension>
+    </detectors>
+    
+    <comments>
+        <single>
+            <expression>#</expression>
+        </single>
+        
+        <multiline>
+            <starts-with>
+                <expression>/*</expression>
+            </starts-with>
+            <ends-with>
+                <expression>*/</expression>
+            </ends-with>
+        </multiline>
+    </comments>
+    
+    <brackets>
+        <pair open="{" close="}" />
+        <pair open="[" close="]" />
+        <pair open="(" close=")" />
+        <pair open="&lt;" close="&gt;" />
+    </brackets>
+    
+    <surrounding-pairs>
+        <pair open="{" close="}" />
+        <pair open="[" close="]" />
+        <pair open="(" close=")" />
+        <pair open="&lt;" close="&gt;" />
+        <pair open="&apos;" close="&apos;" />
+        <pair open="&quot;" close="&quot;" />
+    </surrounding-pairs>
+    
+    <indentation>
+        <increase>
+            <expression>(let)</expression>
+        </increase>
+        <decrease>
+            <expression>^\s+(in)\b</expression>
+        </decrease>
+    </indentation>
+    
+    <scopes>
+        <include syntax="self" collection="comments" />
+        <!-- <include syntax="self" collection="functions" /> -->
+        <include syntax="self" collection="comments" />
+        <include syntax="self" collection="strings" />
+        <include syntax="self" collection="keywords" />
+        <include syntax="self" collection="syntax" />
+    </scopes>
+    
+    <collections>
+        <!-- 
+                                                                                          .            
+                                                                                        .o8            
+        .ooooo.   .ooooo.  ooo. .oo.  .oo.   ooo. .oo.  .oo.    .ooooo.  ooo. .oo.   .o888oo  .oooo.o 
+        d88' `"Y8 d88' `88b `888P"Y88bP"Y88b  `888P"Y88bP"Y88b  d88' `88b `888P"Y88b    888   d88(  "8 
+        888       888   888  888   888   888   888   888   888  888ooo888  888   888    888   `"Y88b.  
+        888   .o8 888   888  888   888   888   888   888   888  888    .o  888   888    888 . o.  )88b 
+        `Y8bod8P' `Y8bod8P' o888o o888o o888o o888o o888o o888o `Y8bod8P' o888o o888o   "888" 8""888P' 
+        
+        -->
+        <collection name="comments">
+            <scope name="nix.comment.single" spell-check="true">
+                <expression>(\#)(.*)$</expression>
+                <capture number="1" name="nix.puncuation.definition.begin" />
+                <capture number="2" name="nix.comment.content" />
+            </scope>
+            
+            <scope name="nix.comment.multiline" spell-check="true">
+                <symbol type="comment">
+                    <context behavior="subtree" />
+                </symbol>
+                <starts-with>
+                    <expression>(\/\*)</expression>
+                    <capture number="0" name="nix.punctuation.definition.begin" />
+                </starts-with>
+                <ends-with>
+                    <expression>(\*\/)</expression>
+                    <capture number="0" name="nix.punctuation.definition.end" />
+                </ends-with>
+            </scope>
+        </collection>
+        
+        <!--
+                     .             o8o                                  
+                   .o8             `"'                                  
+         .oooo.o .o888oo oooo d8b oooo  ooo. .oo.    .oooooooo  .oooo.o 
+        d88(  "8   888   `888""8P `888  `888P"Y88b  888' `88b  d88(  "8 
+        `"Y88b.    888    888      888   888   888  888   888  `"Y88b.  
+        o.  )88b   888 .  888      888   888   888  `88bod8P'  o.  )88b 
+        8""888P'   "888" d888b    o888o o888o o888o `8oooooo.  8""888P' 
+                                                    d"     YD           
+                                                    "Y88888P'       
+                                                        
+        -->
+        <collection name="strings">
+            <scope name="nix.string.multiline">
+                <symbol type="comment">
+                    <context behavior="subtree" />
+                </symbol>
+                <starts-with>
+                    <expression>&apos;&apos;</expression>
+                </starts-with>
+                <ends-with>
+                    <expression>&apos;&apos;</expression>
+                </ends-with>
+            </scope>
+            
+            <scope name="nix.string.double-quoted">
+                <starts-with>
+                    <expression>&quot;</expression>
+                    <capture number="0" name="nix.string.quoted.double" />
+                </starts-with>
+                <ends-with>
+                    <expression>&quot;|(?:(?&lt;!\\)$)</expression>
+                    <capture number="0" name="nix.string.quoted.double" />
+                </ends-with>
+                <subscopes>
+                    <scope name="nix.string.quoted.escape">
+                        <expression>\\(?:\\|&quot;|n|r|t|b|f)</expression>
+                    </scope>
+                </subscopes>
+            </scope>
+        </collection>
+        
+        <!-- 
+             .o88o.                                       .    o8o                                 
+             888 `"                                     .o8    `"'                                 
+            o888oo  oooo  oooo  ooo. .oo.    .ooooo.  .o888oo oooo   .ooooo.  ooo. .oo.    .oooo.o 
+             888    `888  `888  `888P"Y88b  d88' `"Y8   888   `888  d88' `88b `888P"Y88b  d88(  "8 
+             888     888   888   888   888  888         888    888  888   888  888   888  `"Y88b.  
+             888     888   888   888   888  888   .o8   888 .  888  888   888  888   888  o.  )88b 
+            o888o    `V88V"V8P' o888o o888o `Y8bod8P'   "888" o888o `Y8bod8P' o888o o888o 8""888P' 
+            
+        -->
+        <!-- <collection name="functions">
+            <starts-with>
+                <expression>^\{\s*</expression>
+            </starts-with>
+            <ends-with>
+                <expression>(?=^\S)</expression>
+            </ends-with>
+            <subscopes>
+                <include syntax="self" collection="comments" />
+                <include syntax="self" collection="strings" />
+                <include syntax="self" collection="keywords" />
+                <include syntax="self" collection="syntax" />
+            </subscopes>
+        </collection> -->
+        
+        <!--
+                                             .                         
+                                           .o8
+        .oooo.o oooo    ooo ooo. .oo.   .o888oo  .oooo.   oooo    ooo 
+        d88(  "8  `88.  .8'  `888P"Y88b    888   `P  )88b   `88b..8P'  
+        `"Y88b.    `88..8'    888   888    888    .oP"888     Y888'    
+        o.  )88b    `888'     888   888    888 . d8(  888   .o8"'88b   
+        8""888P'     .8'     o888o o888o   "888" `Y888""8o o88'   888o 
+                .o..P'                                                
+                `Y8P'
+                
+        -->
+        <collection name="syntax">
+            <scope name="nix.bracket">
+                <expression>[\(\[\)\]]</expression>
+            </scope>
+            
+            <scope name="nix.operator">
+                <expression>\s+(\+ | \- | \* | \+\+ | \^ | \/ | \/\/ | \=\= | \/\= | &lt; | &gt; | &lt;&lt; | &gt;&gt; | &lt;\= | &gt;\= | &amp;&amp; | \|\|)\s+</expression>
+                <capture number="1" name="nix.keyword" />
+            </scope>
+        </collection>
+        
+        <!-- Keywords -->
+        <collection name="keywords">
+            <include syntax="self" collection="punctuation" />
+            <scope name="nix.keyword">
+                <symbol type="keyword" />
+                <strings>
+                    <string>assert</string>
+                    <string>else</string>
+                    <string>if</string>
+                    <string>in</string>
+                    <string>let</string>
+                    <string>then</string>
+                </strings>
+            </scope>
+        </collection>
+        
+        <!-- Punctuation -->
+        <collection name="punctuation">
+            <scope name="nix.punctuation">
+                <expression>(\= | \:)</expression>
+                <capture number="1" name="nix.keyword" />
+            </scope>
+        </collection>
+    </collections>
+</syntax>
