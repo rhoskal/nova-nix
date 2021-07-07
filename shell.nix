@@ -3,7 +3,7 @@
 with pkgs;
 
 let
-  basePackages = [ nixfmt nodejs yarn ];
+  basePackages = [ git nixfmt nodejs yarn ];
 
   inputs = basePackages;
 in mkShell { buildInputs = inputs; }
