@@ -32,8 +32,9 @@ jobs:
       - name: Lint
         run: nix-shell --pure --run "yarn lint:fix"
 
+      - name: Ensure clean
+        run: nix-shell --pure --run "git status --porcelain"
+
       - name: Build
         run: nix-shell --pure --run "yarn build"
 
-      - name: Ensure clean
-        run: nix-shell --pure --run "git status --porcelain"
