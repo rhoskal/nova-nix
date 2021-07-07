@@ -26,14 +26,14 @@ jobs:
       - name: Install deps
         run: nix-shell --pure --run "yarn install"
 
-      - name: Build
-        run: nix-shell --pure --run "yarn build"
-
       - name: Format
         run: nix-shell --pure --run "yarn format"
 
       - name: Lint
         run: nix-shell --pure --run "yarn lint:fix"
+
+      - name: Build
+        run: nix-shell --pure --run "yarn build"
 
       - name: Ensure clean
         run: nix-shell --pure --run "git status --porcelain"
