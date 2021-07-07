@@ -43,9 +43,8 @@ const getSettings = (): ExtensionSettings => ({
   ),
 });
 
-const invokeFormatDocumentCommand = (editor: TextEditor, settings: ExtensionSettings) => {
+const invokeFormatDocumentCommand = (settings: ExtensionSettings) => (editor: TextEditor) =>
   formatDocument(editor, settings);
-};
 
 /*
  * Main
@@ -56,7 +55,6 @@ export const activate = () => {
   showNotification("Starting extension...");
 
   const settings = getSettings();
-  console.log("settings: ", JSON.stringify(settings));
 
   nova.workspace.config.observe(ExtensionConfigKeys.FormatterPath, (newValue, oldValue) => {
     if (newValue !== oldValue) {
@@ -79,9 +77,7 @@ export const activate = () => {
     }
   });
 
-  nova.commands.register(ExtensionConfigKeys.FormatDocument, (editor: TextEditor) =>
-    invokeFormatDocumentCommand(editor, settings),
-  );
+  nova.commands.register(ExtensionConfigKeys.FormatDocument, invokeFormatDocumentCommand(settings));
 };
 
 export const deactivate = () => {

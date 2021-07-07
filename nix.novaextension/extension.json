@@ -13,7 +13,7 @@
 
   "main": "main.dist.js",
 
-  "activationEvents": ["onLanguage:nix", "onWorkspaceContains:*.nix"],
+  "activationEvents": ["onLanguage:nix"],
 
   "entitlements": {
     "process": true,
@@ -24,7 +24,7 @@
     {
       "key": "hansjhoffman.nix.config.nixFormatPath",
       "title": "Nix Format Path",
-      "description": "The path to your nixfmt binary. Should be empty by default, in that case it will assume the name and try to get it from a global one. If you sent it manually, it will not try to load from the npm folder.",
+      "description": "The absolute path to your nixfmt binary.",
       "link": "https://github.com/serokell/nixfmt",
       "type": "path"
     },
@@ -41,7 +41,7 @@
     {
       "key": "hansjhoffman.nix.config.nixFormatPath",
       "title": "Nix Format Path",
-      "description": "The path to your nixfmt binary. Should be empty by default, in that case it will assume the name and try to get it from a global one. If you sent it manually, it will not try to load from the npm folder.",
+      "description": "The absolute path to your nixfmt binary.",
       "link": "https://github.com/serokell/nixfmt",
       "type": "path"
     },

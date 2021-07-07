@@ -37,7 +37,7 @@ export const formatDocument = (editor: TextEditor, settings: ExtensionSettings) 
         },
         () => ({
           _tag: "invokeFormatterErrror",
-          reason: "Failed to format the document.",
+          reason: "Failed to format the document. Please check the path to your nixfmt.",
         }),
       ),
     ]),
