@@ -59,7 +59,6 @@
       {
         "title": "Format Nix Document",
         "command": "hansjhoffman.nix.commands.formatDocument",
-        "shortcut": "",
         "filters": {
           "syntax": ["nix"]
         }
