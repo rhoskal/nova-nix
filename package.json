@@ -1,7 +1,7 @@
 {
   "name": "nova-nix",
   "version": "0.1.0",
-  "description": "Provides syntax highlighting and formatting for Nix",
+  "description": "Provides syntax highlighting and formatting for Nix.",
   "main": "",
   "author": "Hans Hoffman",
   "license": "MIT",

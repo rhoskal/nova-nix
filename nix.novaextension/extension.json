@@ -2,20 +2,68 @@
   "identifier": "hansjhoffman.nix",
   "name": "Nix",
   "organization": "@hansjhoffman",
-  "description": "Lorem ipsum, dolor sit amet.",
+  "description": "Provides syntax highlighting and formatting for Nix.",
   "version": "0.1.0",
-  "categories": ["formatters", "languages"],
+  "categories": ["commands", "formatters", "languages"],
   "license": "MIT",
   "repository": "https://github.com/hansjhoffman/nova-nix",
   "bugs": {
     "url": "https://github.com/hansjhoffman/nova-nix/issues"
   },
 
-  "activationEvents": ["onLanguage:nix"],
+  "main": "main.dist.js",
 
-  "entitlements": {},
+  "activationEvents": ["onLanguage:nix", "onWorkspaceContains:*.nix"],
 
-  "config": [],
+  "entitlements": {
+    "process": true,
+    "filesystem": "readwrite"
+  },
 
-  "configWorkspace": []
+  "config": [
+    {
+      "key": "hansjhoffman.nix.config.nixFormatPath",
+      "title": "Nix Format Path",
+      "description": "The path to your nixfmt binary. Should be empty by default, in that case it will assume the name and try to get it from a global one. If you sent it manually, it will not try to load from the npm folder.",
+      "link": "https://github.com/serokell/nixfmt",
+      "type": "path"
+    },
+    {
+      "key": "hansjhoffman.nix.config.formatOnSave",
+      "title": "Format on Save",
+      "description": "Automatically format document on save.",
+      "type": "boolean",
+      "default": false
+    }
+  ],
+
+  "configWorkspace": [
+    {
+      "key": "hansjhoffman.nix.config.nixFormatPath",
+      "title": "Nix Format Path",
+      "description": "The path to your nixfmt binary. Should be empty by default, in that case it will assume the name and try to get it from a global one. If you sent it manually, it will not try to load from the npm folder.",
+      "link": "https://github.com/serokell/nixfmt",
+      "type": "path"
+    },
+    {
+      "key": "hansjhoffman.nix.config.formatOnSave",
+      "title": "Format on Save",
+      "description": "Format document when saved.",
+      "type": "boolean",
+      "default": false
+    }
+  ],
+
+  "commands": {
+    "editor": [
+      {
+        "title": "Format Nix Document",
+        "command": "hansjhoffman.nix.commands.formatDocument",
+        "shortcut": "",
+        "filters": {
+          "syntax": ["nix"]
+        }
+      }
+    ]
+  }
 }
