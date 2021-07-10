@@ -25,7 +25,7 @@ jobs:
             extra-platforms = aarch64-linux
 
       - name: Install deps
-        run: nix-shell --pure --run "make build"
+        run: nix-shell --pure --run "make deps"
 
       - name: Format
         run: nix-shell --pure --run "make format"
