@@ -13,6 +13,8 @@
 
   "main": "main.dist.js",
 
+  "activationEvents": ["onWorkspaceContains:*.nix"],
+
   "entitlements": {
     "process": true,
     "filesystem": "readwrite"
