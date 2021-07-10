@@ -17,10 +17,11 @@ let
     # nix will complain and tell you the right value to replace this with
     sha256 = lib.fakeSha256;
     # if you have build time environment variables add them here
-    MY_ENV_VAR="my_value";
+    MY_ENV_VAR = "my_value";
   };
 
-  nodeDependencies = (pkgs.callPackage ./assets/default.nix { }).shell.nodeDependencies;
+  nodeDependencies =
+    (pkgs.callPackage ./assets/default.nix { }).shell.nodeDependencies;
 
   frontEndFiles = stdenvNoCC.mkDerivation {
     pname = "frontend-${pname}";
@@ -53,11 +54,10 @@ let
     impureEnvVars = lib.fetchers.proxyImpureEnvVars;
   };
 
-
 in packages.mixRelease {
   inherit src pname version mixEnv mixDeps;
   # if you have build time environment variables add them here
-  MY_ENV_VAR="my_value";
+  MY_ENV_VAR = "my_value";
   preInstall = ''
     mkdir -p ./priv/static
     cp -r ${frontEndFiles} ./priv/static
