@@ -2,7 +2,7 @@
 
 This plugin provides **Nix** syntax highlighting and formatting support for the new [Nova editor from Panic](https://panic.com/nova/). It also provides formatting support which relies on the installation of [nixfmt](https://github.com/serokell/nixfmt).
 
-![Syntax Highlighting](./Images/syntax.png?raw=true)
+<img src="https://user-images.githubusercontent.com/9221098/125177181-ac36e980-e1a7-11eb-9611-9046835d7f79.png" alt="Syntax Highlighting" />
 
 ## Installation
 
