@@ -24,10 +24,10 @@ jobs:
         run: nix-shell --pure --run "yarn build"
 
       - name: Release
-        if: startsWith(github.ref, "refs/tags/")
+        if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
         with:
           files: nix.novaextension/*
-          prerelease: ${{ contains(github.ref, "-rc") || contains(github.ref, "-beta") || contains(github.ref, "-alpha") }}
+          prerelease: ${{ contains(github.ref, '-rc') || contains(github.ref, '-beta') || contains(github.ref, '-alpha') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
