@@ -20,4 +20,4 @@ The formatting code for this extension lives in `src/` and syntax highlighting c
 
 ### Making pull requests
 
-I really appreciate pull requests, especially since it's a lot of work to maintain an editor plugin. You can ping me on the Elm slack channel or start a GitHub issue to discuss contributions.
+I really appreciate pull requests, especially since it's a lot of work to maintain an editor plugin. You can start a GitHub issue to discuss contributions.
