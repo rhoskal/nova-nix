@@ -3,8 +3,6 @@ import * as TE from "fp-ts/TaskEither";
 import { pipe } from "fp-ts/function";
 import { match } from "ts-pattern";
 
-import { ExtensionSettings } from "../types";
-
 /*
  * Types
  */
@@ -18,7 +16,7 @@ interface InvokeFormatterError {
  * Main
  */
 
-export const formatDocument = (editor: TextEditor, settings: ExtensionSettings) => {
+export const formatDocument = (editor: TextEditor, formatterPath: string) => {
   const documentPath = editor.document.path;
 
   const safeFormat = pipe(
@@ -27,7 +25,7 @@ export const formatDocument = (editor: TextEditor, settings: ExtensionSettings) 
         () => {
           return new Promise<void>((resolve, reject) => {
             const process = new Process("/usr/bin/env", {
-              args: [`${settings.formatterPath}`, `${documentPath}`],
+              args: [`${formatterPath}`, `${documentPath}`],
             });
 
             process.onDidExit((status) => (status === 0 ? resolve() : reject()));
@@ -37,7 +35,7 @@ export const formatDocument = (editor: TextEditor, settings: ExtensionSettings) 
         },
         () => ({
           _tag: "invokeFormatterErrror",
-          reason: "Failed to format the document. Please check the path to your nixfmt.",
+          reason: "Failed to format the document. This is likely a bug with nixfmt.",
         }),
       ),
     ]),

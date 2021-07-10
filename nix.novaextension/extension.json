@@ -13,8 +13,6 @@
 
   "main": "main.dist.js",
 
-  "activationEvents": ["onLanguage:nix"],
-
   "entitlements": {
     "process": true,
     "filesystem": "readwrite"

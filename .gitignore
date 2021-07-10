@@ -3,6 +3,7 @@
 .DS_Store
 .idea
 .vscode
+.nova/Configuration.json
 
 # dependencies
 /**/node_modules/**/*
