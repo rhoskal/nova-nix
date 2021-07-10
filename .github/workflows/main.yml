@@ -25,16 +25,16 @@ jobs:
             extra-platforms = aarch64-linux
 
       - name: Install deps
-        run: nix-shell --pure --run "yarn install"
+        run: nix-shell --pure --run "make build"
 
       - name: Format
-        run: nix-shell --pure --run "yarn format"
+        run: nix-shell --pure --run "make format"
 
       - name: Lint
-        run: nix-shell --pure --run "yarn lint:fix"
+        run: nix-shell --pure --run "make lint"
 
       - name: Compile
-        run: nix-shell --pure --run "yarn compile"
+        run: nix-shell --pure --run "make compile"
 
       - name: Ensure clean
         run: nix-shell --pure --run "git status --porcelain"

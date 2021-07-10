@@ -18,18 +18,15 @@ jobs:
             extra-platforms = aarch64-linux
 
       - name: Install deps
-        run: nix-shell --pure --run "yarn install"
+        run: nix-shell --pure --run "make deps"
 
       - name: Build
-        run: nix-shell --pure --run "yarn build"
+        run: nix-shell --pure --run "make build"
 
       - name: Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
         with:
-          body_path: nix.novaextension/CHANGELOG.md
-          files: |
-            nix.novaextension/*
           prerelease: ${{ contains(github.ref, '-rc') || contains(github.ref, '-beta') || contains(github.ref, '-alpha') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
