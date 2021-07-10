@@ -1,16 +1,6 @@
-{ localServer ? false
-, httpServer ? false
-, sslSupport ? false
-, pythonBindings ? false
-, javaSwigBindings ? false
-, javahlBindings ? false
-, stdenv
-, fetchurl
-, openssl ? null
-, httpd ? null
-, db4 ? null
-, expat
-, swig ? null
+{ localServer ? false, httpServer ? false, sslSupport ? false
+, pythonBindings ? false, javaSwigBindings ? false, javahlBindings ? false
+, stdenv, fetchurl, openssl ? null, httpd ? null, db4 ? null, expat, swig ? null
 , j2sdk ? null }:
 
 assert localServer -> db4 != null;
