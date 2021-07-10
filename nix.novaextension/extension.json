@@ -24,7 +24,7 @@
     {
       "key": "hansjhoffman.nix.config.nixFormatPath",
       "title": "Nix Format Path",
-      "description": "The absolute path to your nixfmt binary.",
+      "description": "The path (absolute) to your nixfmt binary.",
       "link": "https://github.com/serokell/nixfmt",
       "type": "path"
     },
@@ -41,7 +41,7 @@
     {
       "key": "hansjhoffman.nix.config.nixFormatPath",
       "title": "Nix Format Path",
-      "description": "The absolute path to your nixfmt binary.",
+      "description": "The path (absolute) to your nixfmt binary.",
       "link": "https://github.com/serokell/nixfmt",
       "type": "path"
     },
