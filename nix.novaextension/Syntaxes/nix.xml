@@ -233,8 +233,8 @@
         <!-- Assignments -->
         <collection name="assignments">
             <scope>
-                <expression>([a-zA-Z_0-9]+)\s+\={1}[\n|\s+]</expression>
-                <capture number="1" name="nix.identifier.variable" />
+                <expression>([A-Za-zÀ-ÖØ-öø-ÿ_]+[0-9]*)\s*\=(?!\=)</expression>
+                <capture number="1" name="nix.identifier.function" />
             </scope>
         </collection>
         
