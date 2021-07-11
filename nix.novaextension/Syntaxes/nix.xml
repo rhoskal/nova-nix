@@ -57,6 +57,8 @@
         <include syntax="self" collection="strings" />
         <include syntax="self" collection="keywords" />
         <include syntax="self" collection="syntax" />
+        
+        <include syntax="self" collection="assignments" />
     </scopes>
     
     <collections>
@@ -173,9 +175,9 @@
         -->
         <collection name="syntax">
             <scope name="nix.bracket">
-                <expression>[\(\[\)\]]</expression>
+                <expression>(\{ | \} | \[ | \] | \( | &lt; | &gt;)</expression>
             </scope>
-            
+
             <scope name="nix.operator">
                 <expression>\s+(\+ | \- | \* | \+\+ | \^ | \/ | \/\/ | \=\= | \/\= | &lt; | &gt; | &lt;&lt; | &gt;&gt; | &lt;\= | &gt;\= | &amp;&amp; | \|\|)\s+</expression>
                 <capture number="1" name="nix.keyword" />
@@ -184,7 +186,6 @@
         
         <!-- Keywords -->
         <collection name="keywords">
-            <include syntax="self" collection="punctuation" />
             <scope name="nix.keyword">
                 <symbol type="keyword" />
                 <strings>
@@ -198,11 +199,11 @@
             </scope>
         </collection>
         
-        <!-- Punctuation -->
-        <collection name="punctuation">
-            <scope name="nix.punctuation">
-                <expression>(\= | \:)</expression>
-                <capture number="1" name="nix.keyword" />
+        <!-- Assignments -->
+        <collection name="assignments">
+            <scope>
+                <expression>(\s+[a-zA-Z_0-9]+)\s+\=</expression>
+                <capture number="1" name="nix.identifier.variable" />
             </scope>
         </collection>
     </collections>
