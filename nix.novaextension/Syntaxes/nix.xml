@@ -222,7 +222,7 @@
                 </strings>
             </scope>
             <scope name="nix.value.number">
-                <expression>([0-9])</expression>
+                <expression>(\b[0-9]+)</expression>
             </scope>
         </collection>
     </collections>
