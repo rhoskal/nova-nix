@@ -59,6 +59,7 @@
         <include syntax="self" collection="syntax" />
         
         <include syntax="self" collection="assignments" />
+        <include syntax="self" collection="values" />
     </scopes>
     
     <collections>
@@ -180,7 +181,7 @@
 
             <scope name="nix.operator">
                 <expression>\s+(\+ | \- | \* | \+\+ | \^ | \/ | \/\/ | \=\= | \/\= | &lt; | &gt; | &lt;&lt; | &gt;&gt; | &lt;\= | &gt;\= | &amp;&amp; | \|\|)\s+</expression>
-                <capture number="1" name="nix.keyword" />
+                <capture number="1" name="nix.operator" />
             </scope>
         </collection>
         
@@ -204,6 +205,24 @@
             <scope>
                 <expression>(\s+[a-zA-Z_0-9]+)\s+\=</expression>
                 <capture number="1" name="nix.identifier.variable" />
+            </scope>
+        </collection>
+        
+        <!-- Values -->
+        <collection name="values">
+            <scope name="nix.value.boolean">
+                <strings>
+                    <string>true</string>
+                    <string>false</string>
+                </strings>
+            </scope>
+            <scope name="nix.value.null">
+                <strings>
+                    <string>null</string>
+                </strings>
+            </scope>
+            <scope name="nix.value.number">
+                <expression>([0-9])</expression>
             </scope>
         </collection>
     </collections>
