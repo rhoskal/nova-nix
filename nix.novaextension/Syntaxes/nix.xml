@@ -52,14 +52,11 @@
     
     <scopes>
         <include syntax="self" collection="comments" />
-        <!-- <include syntax="self" collection="functions" /> -->
-        <include syntax="self" collection="comments" />
         <include syntax="self" collection="strings" />
         <include syntax="self" collection="keywords" />
         <include syntax="self" collection="syntax" />
-        
-        <include syntax="self" collection="assignments" />
         <include syntax="self" collection="values" />
+        <include syntax="self" collection="assignments" />
     </scopes>
     
     <collections>
@@ -137,31 +134,6 @@
             </scope>
         </collection>
         
-        <!-- 
-             .o88o.                                       .    o8o                                 
-             888 `"                                     .o8    `"'                                 
-            o888oo  oooo  oooo  ooo. .oo.    .ooooo.  .o888oo oooo   .ooooo.  ooo. .oo.    .oooo.o 
-             888    `888  `888  `888P"Y88b  d88' `"Y8   888   `888  d88' `88b `888P"Y88b  d88(  "8 
-             888     888   888   888   888  888         888    888  888   888  888   888  `"Y88b.  
-             888     888   888   888   888  888   .o8   888 .  888  888   888  888   888  o.  )88b 
-            o888o    `V88V"V8P' o888o o888o `Y8bod8P'   "888" o888o `Y8bod8P' o888o o888o 8""888P' 
-            
-        -->
-        <!-- <collection name="functions">
-            <starts-with>
-                <expression>^\{\s*</expression>
-            </starts-with>
-            <ends-with>
-                <expression>(?=^\S)</expression>
-            </ends-with>
-            <subscopes>
-                <include syntax="self" collection="comments" />
-                <include syntax="self" collection="strings" />
-                <include syntax="self" collection="keywords" />
-                <include syntax="self" collection="syntax" />
-            </subscopes>
-        </collection> -->
-        
         <!--
                                              .                         
                                            .o8
@@ -175,12 +147,71 @@
                 
         -->
         <collection name="syntax">
+            <!-- Brackets -->
             <scope name="nix.bracket">
-                <expression>(\{ | \} | \[ | \] | \( | &lt; | &gt;)</expression>
+                <expression>(\{ | \})</expression>
+            </scope>
+            <scope name="nix.bracket">
+                <expression>(\[ | \])</expression>
+            </scope>
+            <scope name="nix.bracket">
+                <expression>(\( | \))</expression>
+            </scope>
+            <scope name="nix.bracket">
+                <expression>(&lt; | &gt;)</expression>
             </scope>
 
+            <!-- Operators -->
             <scope name="nix.operator">
-                <expression>(\-&gt; | \|\| | &amp;&amp; | != | \=\= | &gt;\= | &lt;\= | \/\/ | &lt; | &gt; | \+\+ | ! | \- | \+ | \* | \/ | \?)</expression>
+                <expression>\s+(\-&gt;)\s+</expression>
+            </scope>
+            <scope name="nix.operator">
+                <expression>\s+(\|\|)\s+</expression>
+            </scope>
+            <scope name="nix.operator">
+                <expression>\s+(&amp;&amp;)\s+</expression>
+            </scope>
+            <scope name="nix.operator">
+                <expression>\s+(!\=)\s+</expression>
+            </scope>
+            <scope name="nix.operator">
+                <expression>\s+(\=\=)\s+</expression>
+            </scope>
+            <scope name="nix.operator">
+                <expression>\s+(&gt;\=)\s+</expression>
+            </scope>
+            <scope name="nix.operator">
+                <expression>\s+(&lt;\=)\s+</expression>
+            </scope>
+            <scope name="nix.operator">
+                <expression>\s+(\/\/)\s+</expression>
+            </scope>
+            <scope name="nix.operator">
+                <expression>\s+(&lt;)\s+</expression>
+            </scope>
+            <scope name="nix.operator">
+                <expression>\s+(&gt;)\s+</expression>
+            </scope>
+            <scope name="nix.operator">
+                <expression>\s+(\+\+)\s+</expression>
+            </scope>
+            <scope name="nix.operator">
+                <expression>\s+(!)</expression>
+            </scope>
+            <scope name="nix.operator">
+                <expression>\s+(\-)</expression>
+            </scope>
+            <scope name="nix.operator">
+                <expression>\s+(\+)\s+</expression>
+            </scope>
+            <scope name="nix.operator">
+                <expression>\s+(\*)\s+</expression>
+            </scope>
+            <scope name="nix.operator">
+                <expression>\s+(\/)\s+</expression>
+            </scope>
+            <scope name="nix.operator">
+                <expression>\s+(\?)\s+</expression>
             </scope>
         </collection>
         
@@ -202,7 +233,7 @@
         <!-- Assignments -->
         <collection name="assignments">
             <scope>
-                <expression>(\s+[a-zA-Z_0-9]+)\s+\=</expression>
+                <expression>([a-zA-Z_0-9]+)\s+\={1}[\n|\s+]</expression>
                 <capture number="1" name="nix.identifier.variable" />
             </scope>
         </collection>
