@@ -234,7 +234,7 @@
         <collection name="assignments">
             <scope>
                 <expression>([A-Za-zÀ-ÖØ-öø-ÿ_]+[0-9]*)\s*\=(?!\=)</expression>
-                <capture number="1" name="nix.identifier.function" />
+                <capture number="1" name="nix.identifier.variable" />
             </scope>
         </collection>
         
