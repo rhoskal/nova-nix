@@ -1188,6 +1188,7 @@ var activate = function () {
     nixExtension = some(extension);
 };
 var deactivate = function () {
+    console.log("Deactivating...");
     pipe$1(nixExtension, fold$1(constVoid, function (extension) {
         extension.stop();
         nixExtension = none;

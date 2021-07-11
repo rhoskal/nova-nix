@@ -60,3 +60,7 @@ format-js: ## Format js
 .PHONY: lint
 lint: ## Lint code
 	yarn eslint 'src/**/*.ts' --fix
+
+.PHONY: run
+run: ## Watch for code changes and recompile
+	yarn watch

@@ -147,6 +147,8 @@ export const activate = (): void => {
 };
 
 export const deactivate = (): void => {
+  console.log("Deactivating...");
+
   pipe(
     nixExtension,
     O.fold(constVoid, (extension) => {
