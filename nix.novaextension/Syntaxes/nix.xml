@@ -252,6 +252,22 @@
                     <string>then</string>
                 </strings>
             </scope>
+            
+            <scope name="nix.keywork.inherit">
+                <starts-with>
+                    <expression>(inherit)</expression>
+                    <capture number="0" name="nix.keyword" />
+                </starts-with>
+                <ends-with>
+                    <expression>(?=;)</expression>
+                </ends-with>
+                <subscopes>
+                    <scope>
+                        <expression>([A-Za-zÀ-ÖØ-öø-ÿ_]+[0-9]*)</expression>
+                        <capture number="1" name="nix.identifier.variable" />
+                    </scope>
+                </subscopes>
+            </scope>
         </collection>
         
         <!-- Assignments -->
