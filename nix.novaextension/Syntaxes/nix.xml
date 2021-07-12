@@ -115,6 +115,9 @@
                 <ends-with>
                     <expression>&apos;&apos;</expression>
                 </ends-with>
+                <subscopes>
+                    <include syntax="self" collection="string-template" />
+                </subscopes>
             </scope>
             
             <scope name="nix.string.double-quoted">
@@ -129,6 +132,26 @@
                 <subscopes>
                     <scope name="nix.string.quoted.escape">
                         <expression>\\(?:\\|&quot;|n|r|t|b|f)</expression>
+                    </scope>
+                    <include syntax="self" collection="string-template" />
+                </subscopes>
+            </scope>
+        </collection>
+        
+        <collection name="string-template">
+            <scope>
+                <starts-with>
+                    <expression>(\$\{)</expression>
+                    <capture number="0" name="nix.string-template" />
+                </starts-with>
+                <ends-with>
+                    <expression>(\})</expression>
+                    <capture number="0" name="nix.string-template" />
+                </ends-with>
+                <subscopes>
+                    <scope>
+                        <expression>([A-Za-zÀ-ÖØ-öø-ÿ]+)</expression>
+                        <capture number="1" name="nix.string-template.value" />
                     </scope>
                 </subscopes>
             </scope>
@@ -225,6 +248,7 @@
                     <string>if</string>
                     <string>in</string>
                     <string>let</string>
+                    <string>rec</string>
                     <string>then</string>
                 </strings>
             </scope>
@@ -252,7 +276,7 @@
                 </strings>
             </scope>
             <scope name="nix.value.number">
-                <expression>(\b[0-9]+)</expression>
+                <expression>(\b[0-9]+\b)</expression>
             </scope>
         </collection>
     </collections>
