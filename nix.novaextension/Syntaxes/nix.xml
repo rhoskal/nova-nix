@@ -76,7 +76,6 @@
                 <capture number="1" name="nix.puncuation.definition.begin" />
                 <capture number="2" name="nix.comment.content" />
             </scope>
-            
             <scope name="nix.comment.multiline" spell-check="true">
                 <symbol type="comment">
                     <context behavior="subtree" />
@@ -102,6 +101,23 @@
         `Y8bod88P" `Y8bod8P' o888o   o888o o888o o888o o888o   "888" o888o `Y8bod8P' o888o o888o 8""888P' 
         -->
         <collection name="definitions">
+            <scope name="nix.definition.function">
+                <starts-with>
+                    <expression>^(\{)</expression>
+                    <capture number="0" name="nix.bracket" />
+                </starts-with>
+                <ends-with>
+                    <expression>(\})(?:\:)</expression>
+                    <capture number="0" name="nix.bracket" />
+                </ends-with>
+                <subscopes>
+                    <include syntax="self" collection="values" />
+                    <include syntax="self" collection="syntax" />
+                    <scope name="nix.identifier.argument">
+                        <expression>([A-Za-z0-9_])</expression>
+                    </scope>
+                </subscopes>
+            </scope>
         </collection>
         
         <!-- 
@@ -162,7 +178,7 @@
                 <expression>\b(\d+\.\d+)\b</expression>
             </scope>
             <scope name="nix.value.number.integer">
-                <expression>\s(?!0\d+)(\-?\d+)</expression>
+                <expression>\b(?!0\d+)(\-?\d+)\b</expression>
             </scope>
             <scope name="nix.collection.list">
                 <starts-with>
@@ -266,8 +282,10 @@
                     <capture number="0" name="nix.string-template" />
                 </ends-with>
                 <subscopes>
+                    <include syntax="self" collection="keywords" />
+                    <include syntax="self" collection="values" />
                     <scope>
-                        <expression>([A-Za-z]+)</expression>
+                        <expression>([A-Za-z0-9_]+)</expression>
                         <capture number="1" name="nix.string-template.value" />
                     </scope>
                 </subscopes>
@@ -302,85 +320,56 @@
 
             <!-- Operators -->
             <scope name="nix.operator">
-                <expression>\s+(\-&gt;)\s+</expression>
+                <expression>(\-&gt;)</expression>
             </scope>
             <scope name="nix.operator">
-                <expression>\s+(\|\|)\s+</expression>
+                <expression>(\|\|)</expression>
             </scope>
             <scope name="nix.operator">
-                <expression>\s+(&amp;&amp;)\s+</expression>
+                <expression>(&amp;&amp;)</expression>
             </scope>
             <scope name="nix.operator">
-                <expression>\s+(!\=)\s+</expression>
+                <expression>(!\=)</expression>
             </scope>
             <scope name="nix.operator">
-                <expression>\s+(\=\=)\s+</expression>
+                <expression>(\=\=)</expression>
             </scope>
             <scope name="nix.operator">
-                <expression>\s+(&gt;\=)\s+</expression>
+                <expression>(?&lt;=[0-9])\s*(&lt;\=)\s*(?=[0-9])</expression>
             </scope>
             <scope name="nix.operator">
-                <expression>\s+(&lt;\=)\s+</expression>
+                <expression>(?&lt;=[0-9])\s*(&gt;\=)\s*(?=[0-9])</expression>
             </scope>
             <scope name="nix.operator">
-                <expression>\s+(\/\/)\s+</expression>
+                <expression>(\/\/)</expression>
             </scope>
             <scope name="nix.operator">
-                <expression>\s+(&lt;)\s+</expression>
+                <expression>(?&lt;=[0-9])\s*(&lt;)\s*(?=[0-9])</expression>
             </scope>
             <scope name="nix.operator">
-                <expression>\s+(&gt;)\s+</expression>
+                <expression>(?&lt;=[0-9])\s*(&gt;)\s*(?=[0-9])</expression>
             </scope>
             <scope name="nix.operator">
-                <expression>\s+(\+\+)\s+</expression>
+                <expression>(\+\+)</expression>
             </scope>
             <scope name="nix.operator">
-                <expression>\s+(!)</expression>
+                <expression>(!)</expression>
             </scope>
             <scope name="nix.operator">
-                <expression>\s+(\-)</expression>
+                <expression>(?&lt;=[0-9])\s*(\-)\s*(?=[0-9])</expression>
             </scope>
             <scope name="nix.operator">
-                <expression>\s+(\+)\s+</expression>
+                <expression>(\+)</expression>
             </scope>
             <scope name="nix.operator">
-                <expression>\s+(\*)\s+</expression>
+                <expression>(\*)</expression>
             </scope>
             <scope name="nix.operator">
-                <expression>\s+(\/)\s+</expression>
+                <expression>(?&lt;=[0-9])\s*(\/)\s*(?=[0-9])</expression>
             </scope>
             <scope name="nix.operator">
-                <expression>\s+(\?)\s+</expression>
+                <expression>(\?)</expression>
             </scope>
         </collection>
-        
-        <!-- Keywords -->
-        <!-- <collection name="keywords">
-            
-            <scope name="nix.keywork.inherit">
-                <starts-with>
-                    <expression>(inherit)</expression>
-                    <capture number="0" name="nix.keyword" />
-                </starts-with>
-                <ends-with>
-                    <expression>(?=;)</expression>
-                </ends-with>
-                <subscopes>
-                    <scope>
-                        <expression>([A-Za-zÀ-ÖØ-öø-ÿ_]+[0-9]*)</expression>
-                        <capture number="1" name="nix.identifier.variable" />
-                    </scope>
-                </subscopes>
-            </scope>
-        </collection> -->
-        
-        <!-- Assignments -->
-        <collection name="assignments">
-            <scope>
-                <expression>([A-Za-zÀ-ÖØ-öø-ÿ_]+[0-9]*)\s*\=(?!\=)</expression>
-                <capture number="1" name="nix.identifier.variable" />
-            </scope>
-        </collection>
-        
     </collections>
 </syntax>
