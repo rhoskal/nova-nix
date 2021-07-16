@@ -115,7 +115,7 @@
                     <include syntax="self" collection="syntax" />
                     <include syntax="self" collection="identifiers" />
                     <scope name="nix.identifier.argument">
-                        <expression>([A-Za-z0-9_])</expression>
+                        <expression>([A-Za-z0-9_\-])</expression>
                     </scope>
                 </subscopes>
             </scope>
@@ -355,7 +355,7 @@
                 <expression>(&lt;[a-z][A-Za-z0-9]*&gt;)</expression>
             </scope>
             <scope name="nix.string.paths-with-slashes">
-                <expression>(\.?\/[A-Za-z0-9_\.]+)</expression>
+                <expression>(\.?\/[A-Za-z0-9_\.\-]+)</expression>
             </scope>
         </collection>
         <collection name="string-template">
