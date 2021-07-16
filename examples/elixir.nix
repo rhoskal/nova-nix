@@ -2,7 +2,7 @@ with import <nixpkgs> { };
 
 let
   packages = beam.packagesWith beam.interpreters.erlang;
-  src = builtins.fetchgit {
+  src = builtins.fetchGit {
     url = "ssh://git@github.com/your_id/your_repo";
     rev = "replace_with_your_commit";
   };

@@ -19,6 +19,13 @@ let
       })
     ];
 
+    configureFlags = "-system-zlib -system-libpng -system-libjpeg ${
+        if openglSupport then
+          "-dlopen-opengl -L${mesa}/lib -I${mesa}/include -L${libXmu}/lib -I${libXmu}/include"
+        else
+          ""
+      } ${if threadSupport then "-thread" else "-no-thread"}";
+
     unpackPhase = ''
       runHook preUnpack
 
@@ -27,6 +34,13 @@ let
       done
 
       runHook postUnpack
+    '';
+
+    postInstall = ''
+      mkdir $out/bin $out/etc
+      cp foo $out/bin
+      echo "Hello World" > $out/etc/foo.conf
+      ${if enableBar then "cp bar $out/bin" else ""}
     '';
 
     nativeBuildInputs = [ texlive.combined.scheme-small ];
