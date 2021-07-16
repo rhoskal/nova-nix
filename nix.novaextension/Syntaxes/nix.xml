@@ -1,14 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<syntax name="mylang">
+<syntax name="nix">
     <meta>
         <name>Nix</name>
         <type>structured</type>
         <preferred-file-extension>nix</preferred-file-extension>
+        <!-- https://nixos.org/manual/nix/stable/#ch-expression-language -->
     </meta>
     
     <detectors>
         <extension priority="1.0">nix</extension>
     </detectors>
+    
+    <indentation>
+        <increase>
+            <expression>(let)</expression>
+        </increase>
+        <decrease>
+            <expression>^\s+(in)\b</expression>
+        </decrease>
+    </indentation>
     
     <comments>
         <single>
@@ -41,22 +51,13 @@
         <pair open="&quot;" close="&quot;" />
     </surrounding-pairs>
     
-    <indentation>
-        <increase>
-            <expression>(let)</expression>
-        </increase>
-        <decrease>
-            <expression>^\s+(in)\b</expression>
-        </decrease>
-    </indentation>
-    
     <scopes>
         <include syntax="self" collection="comments" />
-        <include syntax="self" collection="strings" />
+        <include syntax="self" collection="definitions" />
         <include syntax="self" collection="keywords" />
-        <include syntax="self" collection="syntax" />
         <include syntax="self" collection="values" />
-        <include syntax="self" collection="assignments" />
+        <include syntax="self" collection="identifiers" />
+        <include syntax="self" collection="syntax" />
     </scopes>
     
     <collections>
@@ -68,7 +69,6 @@
         888       888   888  888   888   888   888   888   888  888ooo888  888   888    888   `"Y88b.  
         888   .o8 888   888  888   888   888   888   888   888  888    .o  888   888    888 . o.  )88b 
         `Y8bod8P' `Y8bod8P' o888o o888o o888o o888o o888o o888o `Y8bod8P' o888o o888o   "888" 8""888P' 
-        
         -->
         <collection name="comments">
             <scope name="nix.comment.single" spell-check="true">
@@ -92,6 +92,126 @@
             </scope>
         </collection>
         
+        <!-- 
+              .o8             .o88o.  o8o               o8o      .    o8o                                 
+             "888             888 `"  `"'               `"'    .o8    `"'                                 
+         .oooo888   .ooooo.  o888oo  oooo  ooo. .oo.   oooo  .o888oo oooo   .ooooo.  ooo. .oo.    .oooo.o 
+        d88' `888  d88' `88b  888    `888  `888P"Y88b  `888    888   `888  d88' `88b `888P"Y88b  d88(  "8 
+        888   888  888ooo888  888     888   888   888   888    888    888  888   888  888   888  `"Y88b.  
+        888   888  888    .o  888     888   888   888   888    888 .  888  888   888  888   888  o.  )88b 
+        `Y8bod88P" `Y8bod8P' o888o   o888o o888o o888o o888o   "888" o888o `Y8bod8P' o888o o888o 8""888P' 
+        -->
+        <collection name="definitions">
+        </collection>
+        
+        <!-- 
+            oooo                                                                        .o8           
+            `888                                                                       "888           
+             888  oooo   .ooooo.  oooo    ooo oooo oooo    ooo  .ooooo.  oooo d8b  .oooo888   .oooo.o 
+             888 .8P'   d88' `88b  `88.  .8'   `88. `88.  .8'  d88' `88b `888""8P d88' `888  d88(  "8 
+             888888.    888ooo888   `88..8'     `88..]88..8'   888   888  888     888   888  `"Y88b.  
+             888 `88b.  888    .o    `888'       `888'`888'    888   888  888     888   888  o.  )88b 
+            o888o o888o `Y8bod8P'     .8'         `8'  `8'     `Y8bod8P' d888b    `Y8bod88P" 8""888P' 
+                                  .o..P'                                                              
+                                  `Y8P'                                                               
+        -->
+        <collection name="keywords">
+            <scope name="nix.keyword">
+                <strings>
+                    <string>assert</string>
+                    <string>else</string>
+                    <string>if</string>
+                    <string>in</string>
+                    <string>inherit</string>
+                    <string>let</string>
+                    <string>rec</string>
+                    <string>then</string>
+                    <string>with</string>
+                </strings>
+            </scope>
+        </collection>
+        
+        <!--
+                              oooo                                 
+                              `888                                 
+        oooo    ooo  .oooo.    888  oooo  oooo   .ooooo.   .oooo.o 
+         `88.  .8'  `P  )88b   888  `888  `888  d88' `88b d88(  "8 
+          `88..8'    .oP"888   888   888   888  888ooo888 `"Y88b.  
+           `888'    d8(  888   888   888   888  888    .o o.  )88b 
+            `8'     `Y888""8o o888o  `V88V"V8P' `Y8bod8P' 8""888P'                                  
+        -->
+        <collection name="values">
+            <scope name="nix.value.boolean">
+                <strings>
+                    <string>true</string>
+                    <string>false</string>
+                </strings>
+            </scope>
+            <scope name="nix.value.null">
+                <strings>
+                    <string>null</string>
+                </strings>
+            </scope>
+            <scope name="nix.value.symbol.path">
+                <expression>\s(&lt;[a-z][A-Za-z0-9]*&gt;)\s</expression>
+            </scope>
+            <scope name="nix.value.number.float.exponent">
+                <expression>\b[0-9][0-9]*(\.[0-9][0-9]*)?e[+-]?[0-9]+\b</expression>
+            </scope>
+            <scope name="nix.value.number.float">
+                <expression>\b(\d+\.\d+)\b</expression>
+            </scope>
+            <scope name="nix.value.number.integer">
+                <expression>\s(?!0\d+)(\-?\d+)</expression>
+            </scope>
+            <scope name="nix.collection.list">
+                <starts-with>
+                    <expression>\[</expression>
+                    <capture number="0" name="nix.bracket" />
+                </starts-with>
+                <ends-with>
+                    <expression>\]</expression>
+                    <capture number="0" name="nix.bracket" />
+                </ends-with>
+                <subscopes>
+                    <include syntax="self" collection="comments" />
+                    <include syntax="self" collection="values" />
+                    <include syntax="self" collection="strings" />
+                </subscopes>
+            </scope>
+            <scope name="nix.collection.set">
+                <starts-with>
+                    <expression>\{</expression>
+                    <capture number="0" name="nix.bracket" />
+                </starts-with>
+                <ends-with>
+                    <expression>\}</expression>
+                    <capture number="0" name="nix.bracket" />
+                </ends-with>
+                <subscopes>
+                    <include syntax="self" collection="comments" />
+                    <include syntax="self" collection="values" />
+                    <include syntax="self" collection="strings" />
+                </subscopes>
+            </scope>
+            <include syntax="self" collection="strings" />
+        </collection>
+
+        <!-- 
+             o8o        .o8                            .    o8o   .o88o.  o8o                              
+             `"'       "888                          .o8    `"'   888 `"  `"'                              
+            oooo   .oooo888   .ooooo.  ooo. .oo.   .o888oo oooo  o888oo  oooo   .ooooo.  oooo d8b  .oooo.o 
+            `888  d88' `888  d88' `88b `888P"Y88b    888   `888   888    `888  d88' `88b `888""8P d88(  "8 
+             888  888   888  888ooo888  888   888    888    888   888     888  888ooo888  888     `"Y88b.  
+             888  888   888  888    .o  888   888    888 .  888   888     888  888    .o  888     o.  )88b 
+            o888o `Y8bod88P" `Y8bod8P' o888o o888o   "888" o888o o888o   o888o `Y8bod8P' d888b    8""888P' 
+        -->
+        <collection name="identifiers">
+            <scope name="nix.identifier.function">
+                <expression>(import)</expression>
+            </scope>
+        </collection>
+   
         <!--
                      .             o8o                                  
                    .o8             `"'                                  
@@ -101,8 +221,7 @@
         o.  )88b   888 .  888      888   888   888  `88bod8P'  o.  )88b 
         8""888P'   "888" d888b    o888o o888o o888o `8oooooo.  8""888P' 
                                                     d"     YD           
-                                                    "Y88888P'       
-                                                        
+                                                    "Y88888P'  
         -->
         <collection name="strings">
             <scope name="nix.string.multiline">
@@ -119,7 +238,6 @@
                     <include syntax="self" collection="string-template" />
                 </subscopes>
             </scope>
-            
             <scope name="nix.string.double-quoted">
                 <starts-with>
                     <expression>&quot;</expression>
@@ -137,7 +255,6 @@
                 </subscopes>
             </scope>
         </collection>
-        
         <collection name="string-template">
             <scope>
                 <starts-with>
@@ -150,7 +267,7 @@
                 </ends-with>
                 <subscopes>
                     <scope>
-                        <expression>([A-Za-zÀ-ÖØ-öø-ÿ]+)</expression>
+                        <expression>([A-Za-z]+)</expression>
                         <capture number="1" name="nix.string-template.value" />
                     </scope>
                 </subscopes>
@@ -167,7 +284,6 @@
         8""888P'     .8'     o888o o888o   "888" `Y888""8o o88'   888o 
                 .o..P'                                                
                 `Y8P'
-                
         -->
         <collection name="syntax">
             <!-- Brackets -->
@@ -239,19 +355,7 @@
         </collection>
         
         <!-- Keywords -->
-        <collection name="keywords">
-            <scope name="nix.keyword">
-                <symbol type="keyword" />
-                <strings>
-                    <string>assert</string>
-                    <string>else</string>
-                    <string>if</string>
-                    <string>in</string>
-                    <string>let</string>
-                    <string>rec</string>
-                    <string>then</string>
-                </strings>
-            </scope>
+        <!-- <collection name="keywords">
             
             <scope name="nix.keywork.inherit">
                 <starts-with>
@@ -268,7 +372,7 @@
                     </scope>
                 </subscopes>
             </scope>
-        </collection>
+        </collection> -->
         
         <!-- Assignments -->
         <collection name="assignments">
@@ -278,22 +382,5 @@
             </scope>
         </collection>
         
-        <!-- Values -->
-        <collection name="values">
-            <scope name="nix.value.boolean">
-                <strings>
-                    <string>true</string>
-                    <string>false</string>
-                </strings>
-            </scope>
-            <scope name="nix.value.null">
-                <strings>
-                    <string>null</string>
-                </strings>
-            </scope>
-            <scope name="nix.value.number">
-                <expression>(\b[0-9]+\b)</expression>
-            </scope>
-        </collection>
     </collections>
 </syntax>
