@@ -1,3 +1,13 @@
+## v0.3.0 - 2021-07-16
+
+### Added
+
+- Syntax highlighting for function args, built-in global functions and Set keys
+
+### Changed
+
+- Update string templates to include expressions
+
 ## v0.2.0 - 2021-07-11
 
 ### Added
