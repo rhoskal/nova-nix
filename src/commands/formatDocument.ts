@@ -15,7 +15,7 @@ interface InvokeFormatterError {
  * Main
  */
 
-export const formatDocument = (editor: TextEditor, formatterPath: string) => {
+export const formatDocument = (editor: TextEditor, formatterPath: string): void => {
   const documentPath = editor.document.path;
 
   const safeFormat = TE.tryCatch<InvokeFormatterError, void>(

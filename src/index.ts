@@ -1,4 +1,5 @@
 import * as Ap from "fp-ts/Apply";
+import * as M from "fp-ts/Map";
 import * as O from "fp-ts/Option";
 import { constVoid, pipe } from "fp-ts/function";
 import * as Str from "fp-ts/string";
@@ -42,65 +43,46 @@ const showNotification = (body: string): void => {
 let nixExtension: O.Option<NixExtension> = O.none;
 
 class NixExtension {
-  private formatter: Formatter;
+  private formatterPath: O.Option<string>;
+  private formatOnSave: boolean;
+  private saveListeners: Map<string, Disposable>;
 
   constructor() {
-    this.formatter = new Formatter();
+    this.formatterPath = O.none;
+    this.formatOnSave = false;
+    this.saveListeners = new Map();
   }
 
-  start() {
-    nova.commands.register(ExtensionConfigKeys.FormatDocument, this.formatter.format);
-
-    nova.workspace.config.observe(
-      ExtensionConfigKeys.FormatterPath,
-      (newValue: string, oldValue: string) => {
-        if (isFalse(Str.Eq.equals(newValue, oldValue))) {
-          this.formatter.refresh();
-        }
-      },
+  private didAddTextEditor = (editor: TextEditor): void => {
+    pipe(
+      O.fromNullable(editor.document.syntax),
+      O.chain(O.fromPredicate((syntax) => Str.Eq.equals(syntax, "nix"))),
+      O.map((_) => {
+        this.saveListeners = pipe(
+          this.saveListeners,
+          M.upsertAt(Str.Eq)(editor.document.uri, editor.onWillSave(this.didInvokeFormatCommand)),
+        );
+      }),
     );
-    nova.config.observe(ExtensionConfigKeys.FormatterPath, (newValue: string, oldValue: string) => {
-      if (isFalse(Str.Eq.equals(newValue, oldValue))) {
-        this.formatter.refresh();
-      }
-    });
+  };
 
-    nova.workspace.config.observe(ExtensionConfigKeys.FormatOnSave, () => {
-      this.formatter.refresh();
-    });
-    nova.config.observe(ExtensionConfigKeys.FormatOnSave, () => {
-      this.formatter.refresh();
-    });
+  private didInvokeFormatCommand = (editor: TextEditor): void => {
+    pipe(
+      this.formatterPath,
+      O.fold(
+        () => console.log("Skipping... No formatter set."),
+        (path) => formatDocument(editor, path),
+      ),
+    );
+  };
 
-    console.log("Activated 🎉");
-  }
-
-  stop() {
-    // do something
-  }
-}
-
-class Formatter {
-  private path: O.Option<string> = O.none;
-  private formatOnSave: boolean = false;
-
-  constructor() {
-    this.refresh();
-
-    nova.workspace.onDidAddTextEditor((editor: TextEditor): void => {
-      if (isFalse(this.formatOnSave)) return;
-
-      editor.onWillSave(this.format);
-    });
-  }
-
-  private getSettings(): ExtensionSettings {
+  private getConfigs(): ExtensionSettings {
     return {
       formatterPath: pipe(
         O.fromNullable(nova.workspace.config.get(ExtensionConfigKeys.FormatterPath)),
         O.alt(() => O.fromNullable(nova.config.get(ExtensionConfigKeys.FormatterPath))),
         O.chain((path) => O.fromEither(D.string.decode(path))),
-        O.chain(O.fromPredicate((path) => path !== "")),
+        O.chain(O.fromPredicate((path) => isFalse(Str.isEmpty(path)))),
       ),
       formatOnSave: pipe(
         Ap.sequenceT(O.Applicative)(
@@ -109,30 +91,63 @@ class Formatter {
           ),
           O.fromEither(D.boolean.decode(nova.config.get(ExtensionConfigKeys.FormatOnSave))),
         ),
-        O.map(
-          ([workspaceFormatOnSave, globalFormatOnSave]) =>
-            workspaceFormatOnSave || globalFormatOnSave,
-        ),
+        O.map(([workspaceFormatOnSave, extensionFormatOnSave]) => {
+          if (workspaceFormatOnSave) return true;
+          if (extensionFormatOnSave) return true;
+          return false;
+        }),
         O.getOrElseW(() => false),
       ),
     };
   }
 
-  refresh = (): void => {
-    const settings = this.getSettings();
+  private setupObservers = (): void => {
+    nova.workspace.config.observe<unknown>(ExtensionConfigKeys.FormatterPath, () => {
+      this.formatterPath = this.getConfigs().formatterPath;
+    });
+    nova.config.observe<unknown>(ExtensionConfigKeys.FormatterPath, () => {
+      this.formatterPath = this.getConfigs().formatterPath;
+    });
 
-    this.path = settings.formatterPath;
-    this.formatOnSave = settings.formatOnSave;
+    nova.workspace.config.observe<unknown>(ExtensionConfigKeys.FormatOnSave, () => {
+      this.formatOnSave = this.getConfigs().formatOnSave;
+
+      if (this.formatOnSave) {
+        nova.workspace.textEditors.forEach(this.didAddTextEditor);
+      } else {
+        pipe(
+          this.saveListeners,
+          M.map((disposable) => disposable.dispose()),
+        );
+        this.saveListeners.clear();
+      }
+    });
+    nova.config.observe<unknown>(ExtensionConfigKeys.FormatOnSave, () => {
+      this.formatOnSave = this.getConfigs().formatOnSave;
+
+      if (this.formatOnSave) {
+        nova.workspace.textEditors.forEach(this.didAddTextEditor);
+      } else {
+        pipe(
+          this.saveListeners,
+          M.map((disposable) => disposable.dispose()),
+        );
+        this.saveListeners.clear();
+      }
+    });
   };
 
-  format = (editor: TextEditor): void => {
-    pipe(
-      this.path,
-      O.fold(
-        () => console.log("Skipping... No formatter set."),
-        (formatterPath) => formatDocument(editor, formatterPath),
-      ),
-    );
+  public start = (): void => {
+    this.setupObservers();
+
+    nova.workspace.onDidAddTextEditor(this.didAddTextEditor);
+    nova.commands.register(ExtensionConfigKeys.FormatDocument, this.didInvokeFormatCommand);
+
+    console.log("Activated 🎉");
+  };
+
+  public stop = (): void => {
+    // do something
   };
 }
 

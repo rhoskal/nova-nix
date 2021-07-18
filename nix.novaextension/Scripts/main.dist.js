@@ -6,12 +6,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
 /**
  * @since 2.0.0
  */
-function identity(a) {
-    return a;
-}
-/**
- * @since 2.0.0
- */
 function constant(a) {
     return function () { return a; };
 }
@@ -135,6 +129,150 @@ function sequenceT(F) {
 /** @internal */
 var isLeft$1 = function (ma) { return ma._tag === 'Left'; };
 
+// -------------------------------------------------------------------------------------
+// guards
+// -------------------------------------------------------------------------------------
+/**
+ * Returns `true` if the either is an instance of `Left`, `false` otherwise.
+ *
+ * @category guards
+ * @since 2.0.0
+ */
+var isLeft = isLeft$1;
+/**
+ * Returns `true` if the either is an instance of `Right`, `false` otherwise.
+ *
+ * @category guards
+ * @since 2.0.0
+ */
+var isRight = function (ma) { return ma._tag === 'Right'; };
+// -------------------------------------------------------------------------------------
+// constructors
+// -------------------------------------------------------------------------------------
+/**
+ * Constructs a new `Either` holding a `Left` value. This usually represents a failure, due to the right-bias of this
+ * structure.
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+var left = function (e) { return ({ _tag: 'Left', left: e }); };
+/**
+ * Constructs a new `Either` holding a `Right` value. This usually represents a successful value due to the right bias
+ * of this structure.
+ *
+ * @category constructors
+ * @since 2.0.0
+ */
+var right = function (a) { return ({ _tag: 'Right', right: a }); };
+// -------------------------------------------------------------------------------------
+// destructors
+// -------------------------------------------------------------------------------------
+/**
+ * Less strict version of [`match`](#match).
+ *
+ * @category destructors
+ * @since 2.10.0
+ */
+var matchW$1 = function (onLeft, onRight) { return function (ma) {
+    return isLeft(ma) ? onLeft(ma.left) : onRight(ma.right);
+}; };
+/**
+ * Takes two functions and an `Either` value, if the value is a `Left` the inner value is applied to the first function,
+ * if the value is a `Right` the inner value is applied to the second function.
+ *
+ * @example
+ * import { match, left, right } from 'fp-ts/Either'
+ * import { pipe } from 'fp-ts/function'
+ *
+ * function onLeft(errors: Array<string>): string {
+ *   return `Errors: ${errors.join(', ')}`
+ * }
+ *
+ * function onRight(value: number): string {
+ *   return `Ok: ${value}`
+ * }
+ *
+ * assert.strictEqual(
+ *   pipe(
+ *     right(1),
+ *     match(onLeft, onRight)
+ *   ),
+ *   'Ok: 1'
+ * )
+ * assert.strictEqual(
+ *   pipe(
+ *     left(['error 1', 'error 2']),
+ *     match(onLeft, onRight)
+ *   ),
+ *   'Errors: error 1, error 2'
+ * )
+ *
+ * @category destructors
+ * @since 2.10.0
+ */
+var match$1 = matchW$1;
+/**
+ * Alias of [`match`](#match).
+ *
+ * @category destructors
+ * @since 2.0.0
+ */
+var fold$1 = match$1;
+// -------------------------------------------------------------------------------------
+// type class members
+// -------------------------------------------------------------------------------------
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 2.0.0
+ */
+var map$2 = function (f) { return function (fa) {
+    return isLeft(fa) ? fa : right(f(fa.right));
+}; };
+/**
+ * Map a pair of functions over the two type arguments of the bifunctor.
+ *
+ * @category Bifunctor
+ * @since 2.0.0
+ */
+var bimap = function (f, g) { return function (fa) { return (isLeft(fa) ? left(f(fa.left)) : right(g(fa.right))); }; };
+/**
+ * Map a function over the first type argument of a bifunctor.
+ *
+ * @category Bifunctor
+ * @since 2.0.0
+ */
+var mapLeft = function (f) { return function (fa) {
+    return isLeft(fa) ? left(f(fa.left)) : fa;
+}; };
+/**
+ * Less strict version of [`chain`](#chain).
+ *
+ * @category Monad
+ * @since 2.6.0
+ */
+var chainW = function (f) { return function (ma) {
+    return isLeft(ma) ? ma : f(ma.right);
+}; };
+/**
+ * Composes computations in sequence, using the return value of one computation to determine the next computation.
+ *
+ * @category Monad
+ * @since 2.0.0
+ */
+var chain$1 = chainW;
+// -------------------------------------------------------------------------------------
+// instances
+// -------------------------------------------------------------------------------------
+/**
+ * @category instances
+ * @since 2.0.0
+ */
+var URI$1 = 'Either';
+
 /**
  * Returns `true` if the option is `None`, `false` otherwise.
  *
@@ -202,7 +340,7 @@ var fromEither = getRight;
  * @category destructors
  * @since 2.10.0
  */
-var matchW$1 = function (onNone, onSome) { return function (ma) {
+var matchW = function (onNone, onSome) { return function (ma) {
     return isNone(ma) ? onNone() : onSome(ma.value);
 }; };
 /**
@@ -232,14 +370,14 @@ var matchW$1 = function (onNone, onSome) { return function (ma) {
  * @category destructors
  * @since 2.10.0
  */
-var match$1 = matchW$1;
+var match = matchW;
 /**
  * Alias of [`match`](#match).
  *
  * @category destructors
  * @since 2.0.0
  */
-var fold$1 = match$1;
+var fold = match;
 /**
  * Less strict version of [`getOrElse`](#getorelse).
  *
@@ -268,7 +406,7 @@ var fromNullable = function (a) { return (a == null ? none : some(a)); };
 // -------------------------------------------------------------------------------------
 // non-pipeables
 // -------------------------------------------------------------------------------------
-var _map = function (fa, f) { return pipe$1(fa, map$1(f)); };
+var _map$1 = function (fa, f) { return pipe$1(fa, map$1(f)); };
 var _ap = function (fab, fa) { return pipe$1(fab, ap$1(fa)); };
 // -------------------------------------------------------------------------------------
 // type class members
@@ -303,7 +441,7 @@ var of$1 = some;
  * @category Monad
  * @since 2.0.0
  */
-var chain$1 = function (f) { return function (ma) {
+var chain = function (f) { return function (ma) {
     return isNone(ma) ? none : f(ma.value);
 }; };
 /**
@@ -351,14 +489,14 @@ var alt = altW;
  * @category instances
  * @since 2.0.0
  */
-var URI$1 = 'Option';
+var URI = 'Option';
 /**
  * @category instances
  * @since 2.7.0
  */
 var Applicative = {
-    URI: URI$1,
-    map: _map,
+    URI: URI,
+    map: _map$1,
     ap: _ap,
     of: of$1
 };
@@ -371,6 +509,13 @@ var eqStrict = {
     equals: function (a, b) { return a === b; }
 };
 /**
+ * Use [`eqStrict`](#eqstrict) instead
+ *
+ * @since 2.0.0
+ * @deprecated
+ */
+eqStrict.equals;
+/**
  * Use [`Eq`](./string.ts.html#Eq) instead.
  *
  * @category instances
@@ -378,6 +523,74 @@ var eqStrict = {
  * @deprecated
  */
 var eqString = eqStrict;
+
+/**
+ * Insert or replace a key/value pair in a `Map`.
+ *
+ * @category combinators
+ * @since 2.0.0
+ */
+var upsertAt = function (E) {
+    var lookupWithKeyE = lookupWithKey(E);
+    return function (k, a) {
+        var lookupWithKeyEk = lookupWithKeyE(k);
+        return function (m) {
+            var found = lookupWithKeyEk(m);
+            if (isNone(found)) {
+                var out = new Map(m);
+                out.set(k, a);
+                return out;
+            }
+            else if (found.value[1] !== a) {
+                var out = new Map(m);
+                out.set(found.value[0], a);
+                return out;
+            }
+            return m;
+        };
+    };
+};
+function lookupWithKey(E) {
+    return function (k, m) {
+        if (m === undefined) {
+            var lookupWithKeyE_1 = lookupWithKey(E);
+            return function (m) { return lookupWithKeyE_1(k, m); };
+        }
+        var entries = m.entries();
+        var e;
+        // tslint:disable-next-line: strict-boolean-expressions
+        while (!(e = entries.next()).done) {
+            var _a = e.value, ka = _a[0], a = _a[1];
+            if (E.equals(ka, k)) {
+                return some([ka, a]);
+            }
+        }
+        return none;
+    };
+}
+var _mapWithIndex = function (fa, f) {
+    var m = new Map();
+    var entries = fa.entries();
+    var e;
+    // tslint:disable-next-line: strict-boolean-expressions
+    while (!(e = entries.next()).done) {
+        var _a = e.value, key = _a[0], a = _a[1];
+        m.set(key, f(key, a));
+    }
+    return m;
+};
+// -------------------------------------------------------------------------------------
+// non-pipeables
+// -------------------------------------------------------------------------------------
+var _map = function (fa, f) { return _mapWithIndex(fa, function (_, a) { return f(a); }); };
+/**
+ * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
+ * use the type constructor `F` to represent some computational context.
+ *
+ * @category Functor
+ * @since 2.0.0
+ */
+var map = function (f) { return function (fa) { return _map(fa, f); }; };
 
 /**
  * @since 2.10.0
@@ -391,150 +604,12 @@ var eqString = eqStrict;
  */
 // tslint:disable-next-line: deprecation
 var Eq = eqString;
-
-// -------------------------------------------------------------------------------------
-// guards
-// -------------------------------------------------------------------------------------
 /**
- * Returns `true` if the either is an instance of `Left`, `false` otherwise.
+ * Test whether a `string` is empty.
  *
- * @category guards
- * @since 2.0.0
- */
-var isLeft = isLeft$1;
-/**
- * Returns `true` if the either is an instance of `Right`, `false` otherwise.
- *
- * @category guards
- * @since 2.0.0
- */
-var isRight = function (ma) { return ma._tag === 'Right'; };
-// -------------------------------------------------------------------------------------
-// constructors
-// -------------------------------------------------------------------------------------
-/**
- * Constructs a new `Either` holding a `Left` value. This usually represents a failure, due to the right-bias of this
- * structure.
- *
- * @category constructors
- * @since 2.0.0
- */
-var left = function (e) { return ({ _tag: 'Left', left: e }); };
-/**
- * Constructs a new `Either` holding a `Right` value. This usually represents a successful value due to the right bias
- * of this structure.
- *
- * @category constructors
- * @since 2.0.0
- */
-var right = function (a) { return ({ _tag: 'Right', right: a }); };
-// -------------------------------------------------------------------------------------
-// destructors
-// -------------------------------------------------------------------------------------
-/**
- * Less strict version of [`match`](#match).
- *
- * @category destructors
  * @since 2.10.0
  */
-var matchW = function (onLeft, onRight) { return function (ma) {
-    return isLeft(ma) ? onLeft(ma.left) : onRight(ma.right);
-}; };
-/**
- * Takes two functions and an `Either` value, if the value is a `Left` the inner value is applied to the first function,
- * if the value is a `Right` the inner value is applied to the second function.
- *
- * @example
- * import { match, left, right } from 'fp-ts/Either'
- * import { pipe } from 'fp-ts/function'
- *
- * function onLeft(errors: Array<string>): string {
- *   return `Errors: ${errors.join(', ')}`
- * }
- *
- * function onRight(value: number): string {
- *   return `Ok: ${value}`
- * }
- *
- * assert.strictEqual(
- *   pipe(
- *     right(1),
- *     match(onLeft, onRight)
- *   ),
- *   'Ok: 1'
- * )
- * assert.strictEqual(
- *   pipe(
- *     left(['error 1', 'error 2']),
- *     match(onLeft, onRight)
- *   ),
- *   'Errors: error 1, error 2'
- * )
- *
- * @category destructors
- * @since 2.10.0
- */
-var match = matchW;
-/**
- * Alias of [`match`](#match).
- *
- * @category destructors
- * @since 2.0.0
- */
-var fold = match;
-// -------------------------------------------------------------------------------------
-// type class members
-// -------------------------------------------------------------------------------------
-/**
- * `map` can be used to turn functions `(a: A) => B` into functions `(fa: F<A>) => F<B>` whose argument and return types
- * use the type constructor `F` to represent some computational context.
- *
- * @category Functor
- * @since 2.0.0
- */
-var map = function (f) { return function (fa) {
-    return isLeft(fa) ? fa : right(f(fa.right));
-}; };
-/**
- * Map a pair of functions over the two type arguments of the bifunctor.
- *
- * @category Bifunctor
- * @since 2.0.0
- */
-var bimap = function (f, g) { return function (fa) { return (isLeft(fa) ? left(f(fa.left)) : right(g(fa.right))); }; };
-/**
- * Map a function over the first type argument of a bifunctor.
- *
- * @category Bifunctor
- * @since 2.0.0
- */
-var mapLeft = function (f) { return function (fa) {
-    return isLeft(fa) ? left(f(fa.left)) : fa;
-}; };
-/**
- * Less strict version of [`chain`](#chain).
- *
- * @category Monad
- * @since 2.6.0
- */
-var chainW = function (f) { return function (ma) {
-    return isLeft(ma) ? ma : f(ma.right);
-}; };
-/**
- * Composes computations in sequence, using the return value of one computation to determine the next computation.
- *
- * @category Monad
- * @since 2.0.0
- */
-var chain = chainW;
-// -------------------------------------------------------------------------------------
-// instances
-// -------------------------------------------------------------------------------------
-/**
- * @category instances
- * @since 2.0.0
- */
-var URI = 'Either';
+var isEmpty = function (s) { return s.length === 0; };
 
 /**
  * Use [`pipe`](https://gcanti.github.io/fp-ts/modules/function.ts.html#flow) from `function` module instead.
@@ -642,12 +717,12 @@ var ap = function (fab, fa) {
             : right(fab.right(fa.right));
 };
 var M = {
-    URI: URI,
+    URI: URI$1,
     _E: undefined,
-    map: function (fa, f) { return pipe(fa, map(f)); },
+    map: function (fa, f) { return pipe(fa, map$2(f)); },
     ap: ap,
     of: right,
-    chain: function (ma, f) { return pipe(ma, chain(f)); },
+    chain: function (ma, f) { return pipe(ma, chain$1(f)); },
     throwError: left,
     bimap: function (fa, f, g) { return pipe(fa, bimap(f, g)); },
     mapLeft: function (fa, f) { return pipe(fa, mapLeft(f)); },
@@ -726,40 +801,6 @@ fromGuard(boolean$1, 'boolean');
 var tryCatch = function (f, onRejected) { return function () {
     return f().then(right, function (reason) { return left(onRejected(reason)); });
 }; };
-/**
- * Equivalent to `ReadonlyArray#traverseWithIndex(ApplicativeSeq)`.
- *
- * @since 2.9.0
- */
-var traverseSeqArrayWithIndex = function (f) { return function (as) { return function () {
-    return as.reduce(function (acc, a, i) {
-        return acc.then(function (ebs) {
-            return isLeft(ebs)
-                ? acc
-                : f(i, a)().then(function (eb) {
-                    if (isLeft(eb)) {
-                        return eb;
-                    }
-                    ebs.right.push(eb.right);
-                    return ebs;
-                });
-        });
-    }, Promise.resolve(right([])));
-}; }; };
-/**
- * Equivalent to `ReadonlyArray#traverse(ApplicativeSeq)`.
- *
- * @since 2.9.0
- */
-var traverseSeqArray = function (f) { return traverseSeqArrayWithIndex(function (_, a) { return f(a); }); };
-/**
- * Equivalent to `ReadonlyArray#sequence(ApplicativeSeq)`.
- *
- * @since 2.9.0
- */
-var sequenceSeqArray = 
-/*#__PURE__*/
-traverseSeqArray(identity);
 
 var lib = {};
 
@@ -1066,21 +1107,19 @@ exports.isMatching = isMatching;
  */
 var formatDocument = function (editor, formatterPath) {
     var documentPath = editor.document.path;
-    var safeFormat = pipe$1(sequenceSeqArray([
-        tryCatch(function () {
-            return new Promise(function (resolve, reject) {
-                var process = new Process("/usr/bin/env", {
-                    args: ["" + formatterPath, "" + documentPath],
-                });
-                process.onDidExit(function (status) { return (status === 0 ? resolve() : reject()); });
-                process.start();
+    var safeFormat = tryCatch(function () {
+        return new Promise(function (resolve, reject) {
+            var process = new Process("/usr/bin/env", {
+                args: ["" + formatterPath, "" + documentPath],
             });
-        }, function () { return ({
-            _tag: "invokeFormatterErrror",
-            reason: "Failed to format the document. This is likely a bug with nixfmt.",
-        }); }),
-    ]));
-    safeFormat().then(fold(function (err) {
+            process.onDidExit(function (status) { return (status === 0 ? resolve() : reject()); });
+            process.start();
+        });
+    }, function () { return ({
+        _tag: "invokeFormatterErrror",
+        reason: "Failed to format the document. This is likely a bug with nixfmt.",
+    }); });
+    safeFormat().then(fold$1(function (err) {
         return lib.match(err)
             .with({ _tag: "invokeFormatterErrror" }, function (_a) {
             var reason = _a.reason;
@@ -1121,64 +1160,70 @@ var showNotification = function (body) {
 var nixExtension = none;
 var NixExtension = /** @class */ (function () {
     function NixExtension() {
-        this.formatter = new Formatter();
-    }
-    NixExtension.prototype.start = function () {
         var _this = this;
-        nova.commands.register(ExtensionConfigKeys.FormatDocument, this.formatter.format);
-        nova.workspace.config.observe(ExtensionConfigKeys.FormatterPath, function (newValue, oldValue) {
-            if (isFalse(Eq.equals(newValue, oldValue))) {
-                _this.formatter.refresh();
-            }
-        });
-        nova.config.observe(ExtensionConfigKeys.FormatterPath, function (newValue, oldValue) {
-            if (isFalse(Eq.equals(newValue, oldValue))) {
-                _this.formatter.refresh();
-            }
-        });
-        nova.workspace.config.observe(ExtensionConfigKeys.FormatOnSave, function () {
-            _this.formatter.refresh();
-        });
-        nova.config.observe(ExtensionConfigKeys.FormatOnSave, function () {
-            _this.formatter.refresh();
-        });
-        console.log("Activated 🎉");
-    };
-    NixExtension.prototype.stop = function () {
-        // do something
-    };
-    return NixExtension;
-}());
-var Formatter = /** @class */ (function () {
-    function Formatter() {
-        var _this = this;
-        this.path = none;
+        this.didAddTextEditor = function (editor) {
+            pipe$1(fromNullable(editor.document.syntax), chain(fromPredicate(function (syntax) { return Eq.equals(syntax, "nix"); })), map$1(function (_) {
+                _this.saveListeners = pipe$1(_this.saveListeners, upsertAt(Eq)(editor.document.uri, editor.onWillSave(_this.didInvokeFormatCommand)));
+            }));
+        };
+        this.didInvokeFormatCommand = function (editor) {
+            pipe$1(_this.formatterPath, fold(function () { return console.log("Skipping... No formatter set."); }, function (path) { return formatDocument(editor, path); }));
+        };
+        this.setupObservers = function () {
+            nova.workspace.config.observe(ExtensionConfigKeys.FormatterPath, function () {
+                _this.formatterPath = _this.getConfigs().formatterPath;
+            });
+            nova.config.observe(ExtensionConfigKeys.FormatterPath, function () {
+                _this.formatterPath = _this.getConfigs().formatterPath;
+            });
+            nova.workspace.config.observe(ExtensionConfigKeys.FormatOnSave, function () {
+                _this.formatOnSave = _this.getConfigs().formatOnSave;
+                if (_this.formatOnSave) {
+                    nova.workspace.textEditors.forEach(_this.didAddTextEditor);
+                }
+                else {
+                    pipe$1(_this.saveListeners, map(function (disposable) { return disposable.dispose(); }));
+                    _this.saveListeners.clear();
+                }
+            });
+            nova.config.observe(ExtensionConfigKeys.FormatOnSave, function () {
+                _this.formatOnSave = _this.getConfigs().formatOnSave;
+                if (_this.formatOnSave) {
+                    nova.workspace.textEditors.forEach(_this.didAddTextEditor);
+                }
+                else {
+                    pipe$1(_this.saveListeners, map(function (disposable) { return disposable.dispose(); }));
+                    _this.saveListeners.clear();
+                }
+            });
+        };
+        this.start = function () {
+            _this.setupObservers();
+            nova.workspace.onDidAddTextEditor(_this.didAddTextEditor);
+            nova.commands.register(ExtensionConfigKeys.FormatDocument, _this.didInvokeFormatCommand);
+            console.log("Activated 🎉");
+        };
+        this.stop = function () {
+            // do something
+        };
+        this.formatterPath = none;
         this.formatOnSave = false;
-        this.refresh = function () {
-            var settings = _this.getSettings();
-            _this.path = settings.formatterPath;
-            _this.formatOnSave = settings.formatOnSave;
-        };
-        this.format = function (editor) {
-            pipe$1(_this.path, fold$1(function () { return console.log("Skipping... No formatter set."); }, function (formatterPath) { return formatDocument(editor, formatterPath); }));
-        };
-        this.refresh();
-        nova.workspace.onDidAddTextEditor(function (editor) {
-            if (isFalse(_this.formatOnSave))
-                return;
-            editor.onWillSave(_this.format);
-        });
+        this.saveListeners = new Map();
     }
-    Formatter.prototype.getSettings = function () {
+    NixExtension.prototype.getConfigs = function () {
         return {
-            formatterPath: pipe$1(fromNullable(nova.workspace.config.get(ExtensionConfigKeys.FormatterPath)), alt(function () { return fromNullable(nova.config.get(ExtensionConfigKeys.FormatterPath)); }), chain$1(function (path) { return fromEither(string.decode(path)); }), chain$1(fromPredicate(function (path) { return path !== ""; }))),
+            formatterPath: pipe$1(fromNullable(nova.workspace.config.get(ExtensionConfigKeys.FormatterPath)), alt(function () { return fromNullable(nova.config.get(ExtensionConfigKeys.FormatterPath)); }), chain(function (path) { return fromEither(string.decode(path)); }), chain(fromPredicate(function (path) { return isFalse(isEmpty(path)); }))),
             formatOnSave: pipe$1(sequenceT(Applicative)(fromEither(boolean.decode(nova.workspace.config.get(ExtensionConfigKeys.FormatOnSave))), fromEither(boolean.decode(nova.config.get(ExtensionConfigKeys.FormatOnSave)))), map$1(function (_a) {
-                var workspaceFormatOnSave = _a[0], globalFormatOnSave = _a[1];
-                return workspaceFormatOnSave || globalFormatOnSave;
+                var workspaceFormatOnSave = _a[0], extensionFormatOnSave = _a[1];
+                if (workspaceFormatOnSave)
+                    return true;
+                if (extensionFormatOnSave)
+                    return true;
+                return false;
             }), getOrElseW(function () { return false; })),
         };
     };
-    return Formatter;
+    return NixExtension;
 }());
 var activate = function () {
     console.log("Activating...");
@@ -1189,7 +1234,7 @@ var activate = function () {
 };
 var deactivate = function () {
     console.log("Deactivating...");
-    pipe$1(nixExtension, fold$1(constVoid, function (extension) {
+    pipe$1(nixExtension, fold(constVoid, function (extension) {
         extension.stop();
         nixExtension = none;
     }));

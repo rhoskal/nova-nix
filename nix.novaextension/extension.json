@@ -13,7 +13,7 @@
 
   "main": "main.dist.js",
 
-  "activationEvents": ["onWorkspaceContains:*.nix"],
+  "activationEvents": ["onLanguage:nix"],
 
   "entitlements": {
     "process": true,
