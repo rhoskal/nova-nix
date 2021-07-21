@@ -2,6 +2,32 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
+/*! *****************************************************************************
+Copyright (c) Microsoft Corporation.
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+***************************************************************************** */
+
+var __assign = function() {
+    __assign = Object.assign || function __assign(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+
 // -------------------------------------------------------------------------------------
 /**
  * @since 2.0.0
@@ -3632,7 +3658,7 @@ var saveListeners = new Map();
 var selectFormatOnSave = function (configs) {
     var workspace = workspaceConfigsLens.get(configs);
     var global = globalConfigsLens.get(configs);
-    return workspace.formatOnSave ? true : global.formatOnSave ? true : false;
+    return isTrue(workspace.formatOnSave) ? true : isTrue(global.formatOnSave) ? true : false;
 };
 /**
  * Gets a value giving precedence to workspace over global extension values.
@@ -3648,7 +3674,12 @@ var selectFormatterPath = function (configs) {
             : none;
 };
 var addSaveListener = function (editor) {
-    saveListeners = pipe$1(saveListeners, upsertAt$1(Eq)(editor.document.uri, editor.onWillSave(formatDocument)));
+    pipe$1(fromNullable$1(editor.document.syntax), chain(fromPredicate$1(function (syntax) { return Eq.equals(syntax, "nix"); })), fold(constVoid, function (_) {
+        saveListeners = pipe$1(saveListeners, upsertAt$1(Eq)(editor.document.uri, editor.onWillSave(formatDocument)));
+    }));
+};
+var clearSaveListeners = function () {
+    pipe$1(saveListeners, map$1(function (disposable) { return disposable.dispose(); }));
 };
 var formatDocument = function (editor) {
     pipe$1(selectFormatterPath(configs), fold(function () { return console.log("Skipping... No formatter set."); }, function (path) {
@@ -3667,52 +3698,72 @@ var activate = function () {
     showNotification("Starting extension...");
     nova.workspace.onDidAddTextEditor(function (editor) {
         var shouldFormatOnSave = selectFormatOnSave(configs);
-        pipe$1(fromNullable$1(editor.document.syntax), chain(fromPredicate$1(function (syntax) { return Eq.equals(syntax, "nix"); })), chain(fromPredicate$1(function () { return isTrue(shouldFormatOnSave); })), fold(constVoid, function (_) { return addSaveListener(editor); }));
+        if (isTrue(shouldFormatOnSave)) {
+            addSaveListener(editor);
+        }
     });
-    nova.commands.register(ExtensionConfigKeys.FormatDocument, function (editor) {
-        return formatDocument(editor);
-    });
+    nova.commands.register(ExtensionConfigKeys.FormatDocument, formatDocument);
     nova.workspace.config.observe(ExtensionConfigKeys.FormatterPath, function (newValue, oldValue) {
-        var hasChanged = pipe$1(sequenceT(Applicative)(fromEither(string.decode(newValue)), fromEither(string.decode(oldValue))), map$2(function (_a) {
+        pipe$1(sequenceT(Applicative)(fromEither(string.decode(newValue)), fromEither(string.decode(oldValue))), chain(fromPredicate$1(function (_a) {
             var newValue_ = _a[0], oldValue_ = _a[1];
             return Eq.equals(newValue_, oldValue_);
-        }), getOrElseW(function () { return false; }));
-        if (hasChanged) {
-            console.log("global.formatterPath changed");
-        }
+        })), chain(fromPredicate$1(function (_a) {
+            var newValue_ = _a[0]; _a[1];
+            return isFalse(isEmpty(newValue_));
+        })), fold(constVoid, function (_a) {
+            var newValue_ = _a[0]; _a[1];
+            workspaceConfigsLens.modify(function (workspace) { return (__assign(__assign({}, workspace), { formatterPath: some$1(newValue_) })); })(configs);
+        }));
     });
     nova.config.observe(ExtensionConfigKeys.FormatterPath, function (newValue, oldValue) {
-        var hasChanged = pipe$1(sequenceT(Applicative)(fromEither(string.decode(newValue)), fromEither(string.decode(oldValue))), map$2(function (_a) {
+        pipe$1(sequenceT(Applicative)(fromEither(string.decode(newValue)), fromEither(string.decode(oldValue))), chain(fromPredicate$1(function (_a) {
             var newValue_ = _a[0], oldValue_ = _a[1];
             return Eq.equals(newValue_, oldValue_);
-        }), getOrElseW(function () { return false; }));
-        if (hasChanged) {
-            console.log("global.formatterPath changed");
-        }
+        })), chain(fromPredicate$1(function (_a) {
+            var newValue_ = _a[0]; _a[1];
+            return isFalse(isEmpty(newValue_));
+        })), fold(constVoid, function (_a) {
+            var newValue_ = _a[0]; _a[1];
+            globalConfigsLens.modify(function (global) { return (__assign(__assign({}, global), { formatterPath: some$1(newValue_) })); })(configs);
+        }));
     });
     nova.workspace.config.observe(ExtensionConfigKeys.FormatOnSave, function (newValue, oldValue) {
-        var hasChanged = pipe$1(sequenceT(Applicative)(fromEither(boolean.decode(newValue)), fromEither(boolean.decode(oldValue))), map$2(function (_a) {
+        pipe$1(sequenceT(Applicative)(fromEither(boolean.decode(newValue)), fromEither(boolean.decode(oldValue))), chain(fromPredicate$1(function (_a) {
             var newValue_ = _a[0], oldValue_ = _a[1];
             return Eq$1.equals(newValue_, oldValue_);
-        }), getOrElseW(function () { return false; }));
-        if (hasChanged) {
-            console.log("workspace.formatOnSave changed");
+        })), fold(constVoid, function (_a) {
+            var newValue_ = _a[0]; _a[1];
+            workspaceConfigsLens.modify(function (workspace) { return (__assign(__assign({}, workspace), { formatOnSave: newValue_ })); });
+        }));
+        var shouldFormatOnSave = selectFormatOnSave(configs);
+        if (isFalse(shouldFormatOnSave)) {
+            clearSaveListeners();
+        }
+        else {
+            nova.workspace.textEditors.forEach(addSaveListener);
         }
     });
     nova.config.observe(ExtensionConfigKeys.FormatOnSave, function (newValue, oldValue) {
-        var hasChanged = pipe$1(sequenceT(Applicative)(fromEither(boolean.decode(newValue)), fromEither(boolean.decode(oldValue))), map$2(function (_a) {
+        pipe$1(sequenceT(Applicative)(fromEither(boolean.decode(newValue)), fromEither(boolean.decode(oldValue))), chain(fromPredicate$1(function (_a) {
             var newValue_ = _a[0], oldValue_ = _a[1];
             return Eq$1.equals(newValue_, oldValue_);
-        }), getOrElseW(function () { return false; }));
-        if (hasChanged) {
-            console.log("global.formatOnSave changed");
+        })), fold(constVoid, function (_a) {
+            var newValue_ = _a[0]; _a[1];
+            globalConfigsLens.modify(function (global) { return (__assign(__assign({}, global), { formatOnSave: newValue_ })); });
+        }));
+        var shouldFormatOnSave = selectFormatOnSave(configs);
+        if (isFalse(shouldFormatOnSave)) {
+            clearSaveListeners();
+        }
+        else {
+            nova.workspace.textEditors.forEach(addSaveListener);
         }
     });
     console.log("Activated 🎉");
 };
 var deactivate = function () {
     console.log("Deactivating...");
-    pipe$1(saveListeners, map$1(function (disposable) { return disposable.dispose(); }));
+    clearSaveListeners();
 };
 
 exports.activate = activate;

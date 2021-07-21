@@ -139,9 +139,22 @@ const selectFormatterPath = (configs: ExtensionSettings): O.Option<string> => {
 };
 
 const addSaveListener = (editor: TextEditor): void => {
-  saveListeners = pipe(
+  pipe(
+    O.fromNullable(editor.document.syntax),
+    O.chain(O.fromPredicate((syntax) => Str.Eq.equals(syntax, "nix"))),
+    O.fold(constVoid, (_) => {
+      saveListeners = pipe(
+        saveListeners,
+        M.upsertAt(Str.Eq)(editor.document.uri, editor.onWillSave(formatDocument)),
+      );
+    }),
+  );
+};
+
+const clearSaveListeners = (): void => {
+  pipe(
     saveListeners,
-    M.upsertAt(Str.Eq)(editor.document.uri, editor.onWillSave(formatDocument)),
+    M.map((disposable) => disposable.dispose()),
   );
 };
 
@@ -173,81 +186,98 @@ export const activate = (): void => {
   nova.workspace.onDidAddTextEditor((editor: TextEditor): void => {
     const shouldFormatOnSave = selectFormatOnSave(configs);
 
-    pipe(
-      O.fromNullable(editor.document.syntax),
-      O.chain(O.fromPredicate((syntax) => Str.Eq.equals(syntax, "nix"))),
-      O.chain(O.fromPredicate(() => isTrue(shouldFormatOnSave))),
-      O.fold(constVoid, (_) => addSaveListener(editor)),
-    );
+    if (isTrue(shouldFormatOnSave)) {
+      addSaveListener(editor);
+    }
   });
 
-  nova.commands.register(ExtensionConfigKeys.FormatDocument, (editor: TextEditor): void =>
-    formatDocument(editor),
-  );
+  nova.commands.register(ExtensionConfigKeys.FormatDocument, formatDocument);
 
   nova.workspace.config.observe<unknown>(
     ExtensionConfigKeys.FormatterPath,
     (newValue, oldValue): void => {
-      const hasChanged: boolean = pipe(
+      pipe(
         Ap.sequenceT(O.Applicative)(
           O.fromEither(D.string.decode(newValue)),
           O.fromEither(D.string.decode(oldValue)),
         ),
-        O.map(([newValue_, oldValue_]) => Str.Eq.equals(newValue_, oldValue_)),
-        O.getOrElseW(() => false),
+        O.chain(O.fromPredicate(([newValue_, oldValue_]) => Str.Eq.equals(newValue_, oldValue_))),
+        O.chain(O.fromPredicate(([newValue_, _]) => isFalse(Str.isEmpty(newValue_)))),
+        O.fold(constVoid, ([newValue_, _]) => {
+          workspaceConfigsLens.modify((workspace) => ({
+            ...workspace,
+            formatterPath: O.some(newValue_),
+          }))(configs);
+        }),
       );
-
-      if (hasChanged) {
-        console.log("global.formatterPath changed");
-      }
     },
   );
 
   nova.config.observe<unknown>(ExtensionConfigKeys.FormatterPath, (newValue, oldValue): void => {
-    const hasChanged: boolean = pipe(
+    pipe(
       Ap.sequenceT(O.Applicative)(
         O.fromEither(D.string.decode(newValue)),
         O.fromEither(D.string.decode(oldValue)),
       ),
-      O.map(([newValue_, oldValue_]) => Str.Eq.equals(newValue_, oldValue_)),
-      O.getOrElseW(() => false),
+      O.chain(O.fromPredicate(([newValue_, oldValue_]) => Str.Eq.equals(newValue_, oldValue_))),
+      O.chain(O.fromPredicate(([newValue_, _]) => isFalse(Str.isEmpty(newValue_)))),
+      O.fold(constVoid, ([newValue_, _]) => {
+        globalConfigsLens.modify((global) => ({
+          ...global,
+          formatterPath: O.some(newValue_),
+        }))(configs);
+      }),
     );
-
-    if (hasChanged) {
-      console.log("global.formatterPath changed");
-    }
   });
 
   nova.workspace.config.observe<unknown>(
     ExtensionConfigKeys.FormatOnSave,
     (newValue, oldValue): void => {
-      const hasChanged: boolean = pipe(
+      pipe(
         Ap.sequenceT(O.Applicative)(
           O.fromEither(D.boolean.decode(newValue)),
           O.fromEither(D.boolean.decode(oldValue)),
         ),
-        O.map(([newValue_, oldValue_]) => Bool.Eq.equals(newValue_, oldValue_)),
-        O.getOrElseW(() => false),
+        O.chain(O.fromPredicate(([newValue_, oldValue_]) => Bool.Eq.equals(newValue_, oldValue_))),
+        O.fold(constVoid, ([newValue_, _]) => {
+          workspaceConfigsLens.modify((workspace) => ({
+            ...workspace,
+            formatOnSave: newValue_,
+          }));
+        }),
       );
 
-      if (hasChanged) {
-        console.log("workspace.formatOnSave changed");
+      const shouldFormatOnSave = selectFormatOnSave(configs);
+
+      if (isFalse(shouldFormatOnSave)) {
+        clearSaveListeners();
+      } else {
+        nova.workspace.textEditors.forEach(addSaveListener);
       }
     },
   );
 
   nova.config.observe<unknown>(ExtensionConfigKeys.FormatOnSave, (newValue, oldValue): void => {
-    const hasChanged: boolean = pipe(
+    pipe(
       Ap.sequenceT(O.Applicative)(
         O.fromEither(D.boolean.decode(newValue)),
         O.fromEither(D.boolean.decode(oldValue)),
       ),
-      O.map(([newValue_, oldValue_]) => Bool.Eq.equals(newValue_, oldValue_)),
-      O.getOrElseW(() => false),
+      O.chain(O.fromPredicate(([newValue_, oldValue_]) => Bool.Eq.equals(newValue_, oldValue_))),
+      O.fold(constVoid, ([newValue_, _]) => {
+        globalConfigsLens.modify((global) => ({
+          ...global,
+          formatOnSave: newValue_,
+        }));
+      }),
     );
 
-    if (hasChanged) {
-      console.log("global.formatOnSave changed");
+    const shouldFormatOnSave = selectFormatOnSave(configs);
+
+    if (isFalse(shouldFormatOnSave)) {
+      clearSaveListeners();
+    } else {
+      nova.workspace.textEditors.forEach(addSaveListener);
     }
   });
 
@@ -257,8 +287,5 @@ export const activate = (): void => {
 export const deactivate = (): void => {
   console.log("Deactivating...");
 
-  pipe(
-    saveListeners,
-    M.map((disposable) => disposable.dispose()),
-  );
+  clearSaveListeners();
 };
