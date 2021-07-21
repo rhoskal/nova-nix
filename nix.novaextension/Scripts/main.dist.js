@@ -3733,7 +3733,7 @@ var activate = function () {
             return Eq$1.equals(newValue_, oldValue_);
         })), fold(constVoid, function (_a) {
             var newValue_ = _a[0]; _a[1];
-            workspaceConfigsLens.modify(function (workspace) { return (__assign(__assign({}, workspace), { formatOnSave: newValue_ })); });
+            workspaceConfigsLens.modify(function (workspace) { return (__assign(__assign({}, workspace), { formatOnSave: newValue_ })); })(configs);
         }));
         var shouldFormatOnSave = selectFormatOnSave(configs);
         if (isFalse(shouldFormatOnSave)) {
@@ -3749,7 +3749,7 @@ var activate = function () {
             return Eq$1.equals(newValue_, oldValue_);
         })), fold(constVoid, function (_a) {
             var newValue_ = _a[0]; _a[1];
-            globalConfigsLens.modify(function (global) { return (__assign(__assign({}, global), { formatOnSave: newValue_ })); });
+            globalConfigsLens.modify(function (global) { return (__assign(__assign({}, global), { formatOnSave: newValue_ })); })(configs);
         }));
         var shouldFormatOnSave = selectFormatOnSave(configs);
         if (isFalse(shouldFormatOnSave)) {

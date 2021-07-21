@@ -243,7 +243,7 @@ export const activate = (): void => {
           workspaceConfigsLens.modify((workspace) => ({
             ...workspace,
             formatOnSave: newValue_,
-          }));
+          }))(configs);
         }),
       );
 
@@ -268,7 +268,7 @@ export const activate = (): void => {
         globalConfigsLens.modify((global) => ({
           ...global,
           formatOnSave: newValue_,
-        }));
+        }))(configs);
       }),
     );
 
