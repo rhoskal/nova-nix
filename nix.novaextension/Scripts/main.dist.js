@@ -3733,15 +3733,12 @@ var activate = function () {
             return isFalse(Eq$1.equals(newValue_, oldValue_));
         })), fold(constVoid, function (_a) {
             var newValue_ = _a[0]; _a[1];
-            console.log("[workspace]: pre-update ==> ", selectFormatOnSave(configs));
             configs = workspaceConfigsLens.modify(function (workspace) { return (__assign(__assign({}, workspace), { formatOnSave: newValue_ })); })(configs);
             var shouldFormatOnSave = selectFormatOnSave(configs);
             if (isFalse(shouldFormatOnSave)) {
-                console.log("[workspace]: removing listeners...");
                 clearSaveListeners();
             }
             else {
-                console.log("[workspace]: adding listeners...");
                 nova.workspace.textEditors.forEach(addSaveListener);
             }
         }));
@@ -3755,11 +3752,9 @@ var activate = function () {
             configs = globalConfigsLens.modify(function (global) { return (__assign(__assign({}, global), { formatOnSave: newValue_ })); })(configs);
             var shouldFormatOnSave = selectFormatOnSave(configs);
             if (isFalse(shouldFormatOnSave)) {
-                console.log("[global]: removing listeners...");
                 clearSaveListeners();
             }
             else {
-                console.log("[global]: adding listeners...");
                 nova.workspace.textEditors.forEach(addSaveListener);
             }
         }));
