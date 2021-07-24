@@ -3547,6 +3547,7 @@ var configs = {
 };
 var workspaceConfigsLens = Lens.fromPath()(["workspace"]);
 var globalConfigsLens = Lens.fromPath()(["global"]);
+var compositeDisposable = new CompositeDisposable();
 var saveListeners = new Map();
 /**
  * Gets a value giving precedence to workspace over global extension values.
@@ -3590,50 +3591,51 @@ var formatDocument = function (editor) {
 var activate = function () {
     console.log("Activating...");
     showNotification("Starting extension...");
-    nova.workspace.onDidAddTextEditor(function (editor) {
+    compositeDisposable.add(nova.workspace.onDidAddTextEditor(function (editor) {
         var shouldFormatOnSave = selectFormatOnSave(configs);
         if (shouldFormatOnSave) {
             addSaveListener(editor);
         }
-    });
-    nova.commands.register(ExtensionConfigKeys.FormatDocument, formatDocument);
-    nova.workspace.config.observe(ExtensionConfigKeys.FormatterPath, function (newValue, _oldValue) {
+    }));
+    compositeDisposable.add(nova.commands.register(ExtensionConfigKeys.FormatDocument, formatDocument));
+    compositeDisposable.add(nova.workspace.config.observe(ExtensionConfigKeys.FormatterPath, function (newValue, _oldValue) {
         configs = workspaceConfigsLens.modify(function (prevWorkspace) { return (__assign(__assign({}, prevWorkspace), { formatterPath: fromEither(string.decode(newValue)) })); })(configs);
         var shouldFormatOnSave = selectFormatOnSave(configs);
         if (shouldFormatOnSave) {
             clearSaveListeners();
             nova.workspace.textEditors.forEach(addSaveListener);
         }
-    });
-    nova.workspace.config.observe(ExtensionConfigKeys.FormatOnSave, function (newValue, _oldValue) {
+    }));
+    compositeDisposable.add(nova.workspace.config.observe(ExtensionConfigKeys.FormatOnSave, function (newValue, _oldValue) {
         configs = workspaceConfigsLens.modify(function (prevWorkspace) { return (__assign(__assign({}, prevWorkspace), { formatOnSave: pipe$1(boolean.decode(newValue), getOrElseW$1(function () { return false; })) })); })(configs);
         var shouldFormatOnSave = selectFormatOnSave(configs);
         clearSaveListeners();
         if (shouldFormatOnSave) {
             nova.workspace.textEditors.forEach(addSaveListener);
         }
-    });
-    nova.config.observe(ExtensionConfigKeys.FormatterPath, function (newValue, _oldValue) {
+    }));
+    compositeDisposable.add(nova.config.observe(ExtensionConfigKeys.FormatterPath, function (newValue, _oldValue) {
         configs = globalConfigsLens.modify(function (prevGlobal) { return (__assign(__assign({}, prevGlobal), { formatterPath: fromEither(string.decode(newValue)) })); })(configs);
         var shouldFormatOnSave = selectFormatOnSave(configs);
         if (shouldFormatOnSave) {
             clearSaveListeners();
             nova.workspace.textEditors.forEach(addSaveListener);
         }
-    });
-    nova.config.observe(ExtensionConfigKeys.FormatOnSave, function (newValue, _oldValue) {
+    }));
+    compositeDisposable.add(nova.config.observe(ExtensionConfigKeys.FormatOnSave, function (newValue, _oldValue) {
         configs = globalConfigsLens.modify(function (prevGlobal) { return (__assign(__assign({}, prevGlobal), { formatOnSave: pipe$1(boolean.decode(newValue), getOrElseW$1(function () { return false; })) })); })(configs);
         var shouldFormatOnSave = selectFormatOnSave(configs);
         clearSaveListeners();
         if (shouldFormatOnSave) {
             nova.workspace.textEditors.forEach(addSaveListener);
         }
-    });
+    }));
     console.log("Activated 🎉");
 };
 var deactivate = function () {
     console.log("Deactivating...");
     clearSaveListeners();
+    compositeDisposable.dispose();
 };
 
 exports.activate = activate;
