@@ -1,22 +1,28 @@
+## v0.4.0 - 2021-07-23
+
+### Chore & Maintenance
+
+- Update extension dependencies
+
+### Fixes
+
+- `[formatter]` Prevent save listeners for non `.nix` files. Prevent multiple on-save listeners for the same file. ([#10](https://github.com/hansjhoffman/nova-nix/pull/10))
+
 ## v0.3.0 - 2021-07-16
 
-### Added
+### Features
 
-- Syntax highlighting for function args, built-in global functions and Set keys
-
-### Changed
-
-- Update string templates to include expressions
+- `[syntax]` Add syntax highlighting for function args, built-in global functions and Set keys. Update string templates to include expressions. ([#8](https://github.com/hansjhoffman/nova-nix/pull/8))
 
 ## v0.2.0 - 2021-07-11
 
-### Added
+### Features
 
-- Syntax highlighting for operators, assignments, values, and string templates
+- `[syntax]` A syntax highlighting for operators, assignments, values, and string templates. ([#4](https://github.com/hansjhoffman/nova-nix/pull/4))
 
-### Changed
+### Fixes
 
-- Removed syntax highlighting for punctuation (= | :)
+- `[syntax]` Removed syntax highlighting for punctuation (= | :). ([#4](https://github.com/hansjhoffman/nova-nix/pull/4))
 
 ## v0.1.0 - 2021-07-10
 
