@@ -8,8 +8,6 @@ import * as D from "io-ts/Decoder";
 import { Lens } from "monocle-ts";
 import { match } from "ts-pattern";
 
-import { isFalse, isTrue } from "./typeGuards";
-
 /*
  * Types
  */
