@@ -16,8 +16,7 @@
   "activationEvents": ["onWorkspaceContains:*.nix"],
 
   "entitlements": {
-    "process": true,
-    "filesystem": "readwrite"
+    "process": true
   },
 
   "config": [
