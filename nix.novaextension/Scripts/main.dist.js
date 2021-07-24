@@ -98,16 +98,6 @@ function flow(ab, bc, cd, de, ef, fg, gh, hi, ij) {
     }
     return;
 }
-/**
- * @since 2.0.0
- */
-function tuple() {
-    var t = [];
-    for (var _i = 0; _i < arguments.length; _i++) {
-        t[_i] = arguments[_i];
-    }
-    return t;
-}
 function pipe$1(a, ab, bc, cd, de, ef, fg, gh, hi, ij, jk, kl, lm, mn, no, op, pq, qr, rs, st) {
     switch (arguments.length) {
         case 1:
@@ -154,55 +144,11 @@ function pipe$1(a, ab, bc, cd, de, ef, fg, gh, hi, ij, jk, kl, lm, mn, no, op, p
     return;
 }
 
-function curried(f, n, acc) {
-    return function (x) {
-        var combined = Array(acc.length + 1);
-        for (var i = 0; i < acc.length; i++) {
-            combined[i] = acc[i];
-        }
-        combined[acc.length] = x;
-        return n === 0 ? f.apply(null, combined) : curried(f, n - 1, combined);
-    };
-}
-var tupleConstructors = {
-    1: function (a) { return [a]; },
-    2: function (a) { return function (b) { return [a, b]; }; },
-    3: function (a) { return function (b) { return function (c) { return [a, b, c]; }; }; },
-    4: function (a) { return function (b) { return function (c) { return function (d) { return [a, b, c, d]; }; }; }; },
-    5: function (a) { return function (b) { return function (c) { return function (d) { return function (e) { return [a, b, c, d, e]; }; }; }; }; }
-};
-function getTupleConstructor(len) {
-    if (!tupleConstructors.hasOwnProperty(len)) {
-        tupleConstructors[len] = curried(tuple, len - 1, []);
-    }
-    return tupleConstructors[len];
-}
-function sequenceT(F) {
-    return function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        var len = args.length;
-        var f = getTupleConstructor(len);
-        var fas = F.map(args[0], f);
-        for (var i = 1; i < len; i++) {
-            fas = F.ap(fas, args[i]);
-        }
-        return fas;
-    };
-}
-
 var __spreadArray = (undefined && undefined.__spreadArray) || function (to, from) {
     for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
         to[j] = from[i];
     return to;
 };
-// -------------------------------------------------------------------------------------
-// Option
-// -------------------------------------------------------------------------------------
-/** @internal */
-var isSome$1 = function (fa) { return fa._tag === 'Some'; };
 // -------------------------------------------------------------------------------------
 // Either
 // -------------------------------------------------------------------------------------
@@ -330,6 +276,15 @@ var match$1 = matchW$1;
  * @since 2.0.0
  */
 var fold$1 = match$1;
+/**
+ * Less strict version of [`getOrElse`](#getorelse).
+ *
+ * @category destructors
+ * @since 2.6.0
+ */
+var getOrElseW$1 = function (onLeft) { return function (ma) {
+    return isLeft(ma) ? onLeft(ma.left) : ma.right;
+}; };
 // -------------------------------------------------------------------------------------
 // type class members
 // -------------------------------------------------------------------------------------
@@ -384,22 +339,6 @@ var chain$1 = chainW;
  */
 var URI$3 = 'Either';
 
-// -------------------------------------------------------------------------------------
-// guards
-// -------------------------------------------------------------------------------------
-/**
- * Returns `true` if the option is an instance of `Some`, `false` otherwise.
- *
- * @example
- * import { some, none, isSome } from 'fp-ts/Option'
- *
- * assert.strictEqual(isSome(some(1)), true)
- * assert.strictEqual(isSome(none), false)
- *
- * @category guards
- * @since 2.0.0
- */
-var isSome = isSome$1;
 /**
  * Returns `true` if the option is `None`, `false` otherwise.
  *
@@ -830,16 +769,6 @@ function getFirstMonoid() {
     };
 }
 /**
- * @category instances
- * @since 2.7.0
- */
-var Applicative = {
-    URI: URI$2,
-    map: _map$2,
-    ap: _ap,
-    of: of$3
-};
-/**
  * Use small, specific instances instead.
  *
  * @category instances
@@ -885,14 +814,6 @@ var eqStrict = {
  * @deprecated
  */
 eqStrict.equals;
-/**
- * Use [`Eq`](./boolean.ts.html#Eq) instead.
- *
- * @category instances
- * @since 2.0.0
- * @deprecated
- */
-var eqBoolean = eqStrict;
 /**
  * Use [`Eq`](./string.ts.html#Eq) instead.
  *
@@ -1104,19 +1025,6 @@ var monoidAny = {
 };
 
 /**
- * @since 2.2.0
- */
-// -------------------------------------------------------------------------------------
-// instances
-// -------------------------------------------------------------------------------------
-/**
- * @category instances
- * @since 2.10.0
- */
-// tslint:disable-next-line: deprecation
-var Eq$1 = eqBoolean;
-
-/**
  * @since 2.10.0
  */
 // -------------------------------------------------------------------------------------
@@ -1128,12 +1036,6 @@ var Eq$1 = eqBoolean;
  */
 // tslint:disable-next-line: deprecation
 var Eq = eqString;
-/**
- * Test whether a `string` is empty.
- *
- * @since 2.10.0
- */
-var isEmpty = function (s) { return s.length === 0; };
 
 /**
  * Use [`pipe`](https://gcanti.github.io/fp-ts/modules/function.ts.html#flow) from `function` module instead.
@@ -3597,12 +3499,6 @@ exports.isMatching = isMatching;
 /*
  * Types
  */
-var isFalse = function (x) { return typeof x === "boolean" && !x; };
-var isTrue = function (x) { return typeof x === "boolean" && x; };
-
-/*
- * Types
- */
 var ExtensionConfigKeys;
 (function (ExtensionConfigKeys) {
     ExtensionConfigKeys["FormatterPath"] = "hansjhoffman.nix.config.nixFormatPath";
@@ -3640,12 +3536,12 @@ var safeFormat = function (editor, formatterPath) {
  */
 var configs = {
     workspace: {
-        formatOnSave: pipe$1(fromNullable$1(nova.workspace.config.get(ExtensionConfigKeys.FormatOnSave)), chain(function (value) { return fromEither(boolean.decode(value)); }), getOrElseW(function () { return false; })),
-        formatterPath: pipe$1(fromNullable$1(nova.workspace.config.get(ExtensionConfigKeys.FormatterPath)), chain(function (path) { return fromEither(string.decode(path)); }), chain(fromPredicate$1(function (path) { return isFalse(isEmpty(path)); }))),
+        formatOnSave: false,
+        formatterPath: none,
     },
     global: {
-        formatOnSave: pipe$1(fromNullable$1(nova.config.get(ExtensionConfigKeys.FormatOnSave)), chain(function (value) { return fromEither(boolean.decode(value)); }), getOrElseW(function () { return false; })),
-        formatterPath: pipe$1(fromNullable$1(nova.config.get(ExtensionConfigKeys.FormatterPath)), chain(function (path) { return fromEither(string.decode(path)); }), chain(fromPredicate$1(function (path) { return isFalse(isEmpty(path)); }))),
+        formatOnSave: false,
+        formatterPath: none,
     },
 };
 var workspaceConfigsLens = Lens.fromPath()(["workspace"]);
@@ -3667,19 +3563,16 @@ var selectFormatOnSave = function (configs) {
 var selectFormatterPath = function (configs) {
     var workspace = workspaceConfigsLens.get(configs);
     var global = globalConfigsLens.get(configs);
-    return isSome(workspace.formatterPath)
-        ? workspace.formatterPath
-        : isSome(global.formatterPath)
-            ? global.formatterPath
-            : none;
+    return pipe$1(workspace.formatterPath, alt(function () { return global.formatterPath; }));
 };
 var addSaveListener = function (editor) {
     pipe$1(fromNullable$1(editor.document.syntax), chain(fromPredicate$1(function (syntax) { return Eq.equals(syntax, "nix"); })), fold(constVoid, function (_) {
-        saveListeners = pipe$1(saveListeners, upsertAt$1(Eq)(editor.document.uri, editor.onWillSave(formatDocument)));
+        saveListeners = upsertAt$1(Eq)(editor.document.uri, editor.onWillSave(formatDocument))(saveListeners);
     }));
 };
 var clearSaveListeners = function () {
     pipe$1(saveListeners, map$1(function (disposable) { return disposable.dispose(); }));
+    saveListeners = new Map();
 };
 var formatDocument = function (editor) {
     pipe$1(selectFormatterPath(configs), fold(function () { return console.log("Skipping... No formatter set."); }, function (path) {
@@ -3698,66 +3591,42 @@ var activate = function () {
     showNotification("Starting extension...");
     nova.workspace.onDidAddTextEditor(function (editor) {
         var shouldFormatOnSave = selectFormatOnSave(configs);
-        if (isTrue(shouldFormatOnSave)) {
+        if (shouldFormatOnSave) {
             addSaveListener(editor);
         }
     });
     nova.commands.register(ExtensionConfigKeys.FormatDocument, formatDocument);
-    nova.workspace.config.observe(ExtensionConfigKeys.FormatterPath, function (newValue, oldValue) {
-        pipe$1(sequenceT(Applicative)(fromEither(string.decode(newValue)), fromEither(string.decode(oldValue))), chain(fromPredicate$1(function (_a) {
-            var newValue_ = _a[0], oldValue_ = _a[1];
-            return isFalse(Eq.equals(newValue_, oldValue_));
-        })), chain(fromPredicate$1(function (_a) {
-            var newValue_ = _a[0]; _a[1];
-            return isFalse(isEmpty(newValue_));
-        })), fold(constVoid, function (_a) {
-            var newValue_ = _a[0]; _a[1];
-            configs = workspaceConfigsLens.modify(function (workspace) { return (__assign(__assign({}, workspace), { formatterPath: some$1(newValue_) })); })(configs);
-        }));
+    nova.workspace.config.observe(ExtensionConfigKeys.FormatterPath, function (newValue, _oldValue) {
+        configs = workspaceConfigsLens.modify(function (prevWorkspace) { return (__assign(__assign({}, prevWorkspace), { formatterPath: fromEither(string.decode(newValue)) })); })(configs);
+        var shouldFormatOnSave = selectFormatOnSave(configs);
+        if (shouldFormatOnSave) {
+            clearSaveListeners();
+            nova.workspace.textEditors.forEach(addSaveListener);
+        }
     });
-    nova.config.observe(ExtensionConfigKeys.FormatterPath, function (newValue, oldValue) {
-        pipe$1(sequenceT(Applicative)(fromEither(string.decode(newValue)), fromEither(string.decode(oldValue))), chain(fromPredicate$1(function (_a) {
-            var newValue_ = _a[0], oldValue_ = _a[1];
-            return isFalse(Eq.equals(newValue_, oldValue_));
-        })), chain(fromPredicate$1(function (_a) {
-            var newValue_ = _a[0]; _a[1];
-            return isFalse(isEmpty(newValue_));
-        })), fold(constVoid, function (_a) {
-            var newValue_ = _a[0]; _a[1];
-            configs = globalConfigsLens.modify(function (global) { return (__assign(__assign({}, global), { formatterPath: some$1(newValue_) })); })(configs);
-        }));
+    nova.workspace.config.observe(ExtensionConfigKeys.FormatOnSave, function (newValue, _oldValue) {
+        configs = workspaceConfigsLens.modify(function (prevWorkspace) { return (__assign(__assign({}, prevWorkspace), { formatOnSave: pipe$1(boolean.decode(newValue), getOrElseW$1(function () { return false; })) })); })(configs);
+        var shouldFormatOnSave = selectFormatOnSave(configs);
+        clearSaveListeners();
+        if (shouldFormatOnSave) {
+            nova.workspace.textEditors.forEach(addSaveListener);
+        }
     });
-    nova.workspace.config.observe(ExtensionConfigKeys.FormatOnSave, function (newValue, oldValue) {
-        pipe$1(sequenceT(Applicative)(fromEither(boolean.decode(newValue)), fromEither(boolean.decode(oldValue))), chain(fromPredicate$1(function (_a) {
-            var newValue_ = _a[0], oldValue_ = _a[1];
-            return isFalse(Eq$1.equals(newValue_, oldValue_));
-        })), fold(constVoid, function (_a) {
-            var newValue_ = _a[0]; _a[1];
-            configs = workspaceConfigsLens.modify(function (workspace) { return (__assign(__assign({}, workspace), { formatOnSave: newValue_ })); })(configs);
-            var shouldFormatOnSave = selectFormatOnSave(configs);
-            if (isFalse(shouldFormatOnSave)) {
-                clearSaveListeners();
-            }
-            else {
-                nova.workspace.textEditors.forEach(addSaveListener);
-            }
-        }));
+    nova.config.observe(ExtensionConfigKeys.FormatterPath, function (newValue, _oldValue) {
+        configs = globalConfigsLens.modify(function (prevGlobal) { return (__assign(__assign({}, prevGlobal), { formatterPath: fromEither(string.decode(newValue)) })); })(configs);
+        var shouldFormatOnSave = selectFormatOnSave(configs);
+        if (shouldFormatOnSave) {
+            clearSaveListeners();
+            nova.workspace.textEditors.forEach(addSaveListener);
+        }
     });
-    nova.config.observe(ExtensionConfigKeys.FormatOnSave, function (newValue, oldValue) {
-        pipe$1(sequenceT(Applicative)(fromEither(boolean.decode(newValue)), fromEither(boolean.decode(oldValue))), chain(fromPredicate$1(function (_a) {
-            var newValue_ = _a[0], oldValue_ = _a[1];
-            return isFalse(Eq$1.equals(newValue_, oldValue_));
-        })), fold(constVoid, function (_a) {
-            var newValue_ = _a[0]; _a[1];
-            configs = globalConfigsLens.modify(function (global) { return (__assign(__assign({}, global), { formatOnSave: newValue_ })); })(configs);
-            var shouldFormatOnSave = selectFormatOnSave(configs);
-            if (isFalse(shouldFormatOnSave)) {
-                clearSaveListeners();
-            }
-            else {
-                nova.workspace.textEditors.forEach(addSaveListener);
-            }
-        }));
+    nova.config.observe(ExtensionConfigKeys.FormatOnSave, function (newValue, _oldValue) {
+        configs = globalConfigsLens.modify(function (prevGlobal) { return (__assign(__assign({}, prevGlobal), { formatOnSave: pipe$1(boolean.decode(newValue), getOrElseW$1(function () { return false; })) })); })(configs);
+        var shouldFormatOnSave = selectFormatOnSave(configs);
+        clearSaveListeners();
+        if (shouldFormatOnSave) {
+            nova.workspace.textEditors.forEach(addSaveListener);
+        }
     });
     console.log("Activated 🎉");
 };
