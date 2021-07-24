@@ -19,3 +19,5 @@ export const isNil = (x: unknown): x is Nil => isNull(x) || isUndefined(x);
 export const isNotNil = <T>(x: T | Nil): x is T => !isNil(x);
 
 export const isFalse = (x: unknown): x is false => typeof x === "boolean" && !x;
+
+export const isTrue = (x: unknown): x is true => typeof x === "boolean" && x;

@@ -2,7 +2,7 @@ pet = buildGoModule rec {
   pname = "pet";
   version = "0.3.4";
   
-  src = fetchFromGitHub {
+  src = fetchFromGithub {
     owner = "knqyf263";
     repo = "pet";
     rev = "v${version}";
