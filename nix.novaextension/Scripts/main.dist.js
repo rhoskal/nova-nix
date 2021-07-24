@@ -3474,11 +3474,12 @@ const matchPattern = (pattern, value, select) => {
             }
             return [...pattern.values()].every((subPattern) => value.has(subPattern));
         }
-        return Object.keys(pattern).every((k) => matchPattern(
-        // @ts-ignore
-        pattern[k], 
-        // @ts-ignore
-        value[k], select));
+        return Object.keys(pattern).every((k) => k in value &&
+            matchPattern(
+            // @ts-ignore
+            pattern[k], 
+            // @ts-ignore
+            value[k], select));
     }
     return value === pattern;
 };
@@ -3491,7 +3492,7 @@ function isMatching(...args) {
         const [pattern, value] = args;
         return matchPattern(pattern, value, () => { });
     }
-    throw new Error(`isMatching wasn't given enough arguments: expected 1 or 2, receive ${args.length}.`);
+    throw new Error(`isMatching wasn't given enough arguments: expected 1 or 2, received ${args.length}.`);
 }
 exports.isMatching = isMatching;
 }(lib));
