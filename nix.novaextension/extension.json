@@ -30,7 +30,7 @@
     {
       "key": "hansjhoffman.nix.config.formatOnSave",
       "title": "Format on Save",
-      "description": "Automatically format document on save.",
+      "description": "Format document when saved.",
       "type": "boolean",
       "default": false
     }

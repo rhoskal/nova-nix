@@ -41,8 +41,8 @@ interface InvokeFormatterError {
 const showNotification = (body: string): void => {
   if (nova.inDevMode()) {
     const notification = new NotificationRequest("nix-nova-notification");
-    notification.title = nova.localize(nova.extension.name);
-    notification.body = nova.localize(body);
+    notification.title = nova.extension.name;
+    notification.body = body;
     nova.notifications.add(notification);
   }
 };
@@ -67,7 +67,7 @@ export const safeFormat = (
     },
     () => ({
       _tag: "invokeFormatterErrror",
-      reason: "Failed to format the document. This is likely a bug with nixfmt.",
+      reason: `${nova.localize("Failed to format the document")}.`,
     }),
   );
 };
@@ -143,7 +143,7 @@ const formatDocument = (editor: TextEditor): void => {
   pipe(
     selectFormatterPath(configs),
     O.fold(
-      () => console.log("Skipping... No formatter set."),
+      () => console.log(`${nova.localize("Skipping")}... ${nova.localize("No formatter set")}.`),
       (path) => {
         safeFormat(editor, path)().then(
           E.fold(
@@ -152,7 +152,7 @@ const formatDocument = (editor: TextEditor): void => {
                 .with({ _tag: "invokeFormatterErrror" }, ({ reason }) => console.error(reason))
                 .exhaustive();
             },
-            () => console.log(`Formatted: ${editor.document.uri}`),
+            () => console.log(`${nova.localize("Formatted")} ${editor.document.path}`),
           ),
         );
       },
@@ -161,8 +161,8 @@ const formatDocument = (editor: TextEditor): void => {
 };
 
 export const activate = (): void => {
-  console.log("Activating...");
-  showNotification("Starting extension...");
+  console.log(`${nova.localize("Activating")}...`);
+  showNotification(`${nova.localize("Starting extension")}...`);
 
   compositeDisposable.add(
     nova.workspace.onDidAddTextEditor((editor: TextEditor): void => {
@@ -256,11 +256,11 @@ export const activate = (): void => {
     }),
   );
 
-  console.log("Activated 🎉");
+  console.log(`${nova.localize("Activated")} 🎉`);
 };
 
 export const deactivate = (): void => {
-  console.log("Deactivating...");
+  console.log(`${nova.localize("Deactivating")}...`);
 
   clearSaveListeners();
   compositeDisposable.dispose();
