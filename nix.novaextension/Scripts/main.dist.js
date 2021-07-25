@@ -3539,7 +3539,7 @@ var safeFormat = function (editor, formatterPath) {
             process.start();
         });
     }, function () { return ({
-        _tag: "invokeFormatterErrror",
+        _tag: "invokeFormatterError",
         reason: nova.localize("Failed to format the document") + ".",
     }); });
 };
@@ -3591,7 +3591,7 @@ var formatDocument = function (editor) {
     pipe$1(selectFormatterPath(configs), fold(function () { return console.log(nova.localize("Skipping") + "... " + nova.localize("No formatter set") + "."); }, function (path) {
         safeFormat(editor, path)().then(fold$1(function (err) {
             return lib.match(err)
-                .with({ _tag: "invokeFormatterErrror" }, function (_a) {
+                .with({ _tag: "invokeFormatterError" }, function (_a) {
                 var reason = _a.reason;
                 return console.error(reason);
             })

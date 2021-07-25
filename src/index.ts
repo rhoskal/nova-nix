@@ -32,7 +32,7 @@ interface ExtensionSettings {
 }
 
 interface InvokeFormatterError {
-  _tag: "invokeFormatterErrror";
+  _tag: "invokeFormatterError";
   reason: string;
 }
 
@@ -68,7 +68,7 @@ const safeFormat = (
       });
     },
     () => ({
-      _tag: "invokeFormatterErrror",
+      _tag: "invokeFormatterError",
       reason: `${nova.localize("Failed to format the document")}.`,
     }),
   );
@@ -167,7 +167,7 @@ const formatDocument = (editor: TextEditor): void => {
           E.fold(
             (err) => {
               return match(err)
-                .with({ _tag: "invokeFormatterErrror" }, ({ reason }) => console.error(reason))
+                .with({ _tag: "invokeFormatterError" }, ({ reason }) => console.error(reason))
                 .exhaustive();
             },
             () => console.log(`${nova.localize("Formatted")} ${editor.document.path}`),
