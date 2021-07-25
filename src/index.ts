@@ -49,7 +49,7 @@ const showNotification = (body: string): void => {
   }
 };
 
-export const safeFormat = (
+const safeFormat = (
   editor: TextEditor,
   formatterPath: string,
 ): TE.TaskEither<InvokeFormatterError, void> => {
