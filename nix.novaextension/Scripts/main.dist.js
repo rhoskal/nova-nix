@@ -1036,6 +1036,12 @@ var monoidAny = {
  */
 // tslint:disable-next-line: deprecation
 var Eq = eqString;
+/**
+ * Test whether a `string` is empty.
+ *
+ * @since 2.10.0
+ */
+var isEmpty = function (s) { return s.length === 0; };
 
 /**
  * Use [`pipe`](https://gcanti.github.io/fp-ts/modules/function.ts.html#flow) from `function` module instead.
@@ -3500,6 +3506,11 @@ exports.isMatching = isMatching;
 /*
  * Types
  */
+var isFalse = function (x) { return typeof x === "boolean" && !x; };
+
+/*
+ * Types
+ */
 var ExtensionConfigKeys;
 (function (ExtensionConfigKeys) {
     ExtensionConfigKeys["FormatterPath"] = "hansjhoffman.nix.config.nixFormatPath";
@@ -3537,12 +3548,12 @@ var safeFormat = function (editor, formatterPath) {
  */
 var configs = {
     workspace: {
-        formatOnSave: false,
-        formatterPath: none,
+        formatOnSave: pipe$1(fromNullable$1(nova.workspace.config.get(ExtensionConfigKeys.FormatOnSave)), chain(function (value) { return fromEither(boolean.decode(value)); }), getOrElseW(function () { return false; })),
+        formatterPath: pipe$1(fromNullable$1(nova.workspace.config.get(ExtensionConfigKeys.FormatterPath)), chain(function (path) { return fromEither(string.decode(path)); }), chain(fromPredicate$1(function (path) { return isFalse(isEmpty(path)); }))),
     },
     global: {
-        formatOnSave: false,
-        formatterPath: none,
+        formatOnSave: pipe$1(fromNullable$1(nova.config.get(ExtensionConfigKeys.FormatOnSave)), chain(function (value) { return fromEither(boolean.decode(value)); }), getOrElseW(function () { return false; })),
+        formatterPath: pipe$1(fromNullable$1(nova.config.get(ExtensionConfigKeys.FormatterPath)), chain(function (path) { return fromEither(string.decode(path)); }), chain(fromPredicate$1(function (path) { return isFalse(isEmpty(path)); }))),
     },
 };
 var workspaceConfigsLens = Lens.fromPath()(["workspace"]);
@@ -3598,7 +3609,7 @@ var activate = function () {
         }
     }));
     compositeDisposable.add(nova.commands.register(ExtensionConfigKeys.FormatDocument, formatDocument));
-    compositeDisposable.add(nova.workspace.config.observe(ExtensionConfigKeys.FormatterPath, function (newValue, _oldValue) {
+    compositeDisposable.add(nova.workspace.config.onDidChange(ExtensionConfigKeys.FormatterPath, function (newValue, _oldValue) {
         configs = workspaceConfigsLens.modify(function (prevWorkspace) { return (__assign(__assign({}, prevWorkspace), { formatterPath: fromEither(string.decode(newValue)) })); })(configs);
         var shouldFormatOnSave = selectFormatOnSave(configs);
         if (shouldFormatOnSave) {
@@ -3606,7 +3617,7 @@ var activate = function () {
             nova.workspace.textEditors.forEach(addSaveListener);
         }
     }));
-    compositeDisposable.add(nova.workspace.config.observe(ExtensionConfigKeys.FormatOnSave, function (newValue, _oldValue) {
+    compositeDisposable.add(nova.workspace.config.onDidChange(ExtensionConfigKeys.FormatOnSave, function (newValue, _oldValue) {
         configs = workspaceConfigsLens.modify(function (prevWorkspace) { return (__assign(__assign({}, prevWorkspace), { formatOnSave: pipe$1(boolean.decode(newValue), getOrElseW$1(function () { return false; })) })); })(configs);
         var shouldFormatOnSave = selectFormatOnSave(configs);
         clearSaveListeners();
@@ -3614,7 +3625,7 @@ var activate = function () {
             nova.workspace.textEditors.forEach(addSaveListener);
         }
     }));
-    compositeDisposable.add(nova.config.observe(ExtensionConfigKeys.FormatterPath, function (newValue, _oldValue) {
+    compositeDisposable.add(nova.config.onDidChange(ExtensionConfigKeys.FormatterPath, function (newValue, _oldValue) {
         configs = globalConfigsLens.modify(function (prevGlobal) { return (__assign(__assign({}, prevGlobal), { formatterPath: fromEither(string.decode(newValue)) })); })(configs);
         var shouldFormatOnSave = selectFormatOnSave(configs);
         if (shouldFormatOnSave) {
@@ -3622,7 +3633,7 @@ var activate = function () {
             nova.workspace.textEditors.forEach(addSaveListener);
         }
     }));
-    compositeDisposable.add(nova.config.observe(ExtensionConfigKeys.FormatOnSave, function (newValue, _oldValue) {
+    compositeDisposable.add(nova.config.onDidChange(ExtensionConfigKeys.FormatOnSave, function (newValue, _oldValue) {
         configs = globalConfigsLens.modify(function (prevGlobal) { return (__assign(__assign({}, prevGlobal), { formatOnSave: pipe$1(boolean.decode(newValue), getOrElseW$1(function () { return false; })) })); })(configs);
         var shouldFormatOnSave = selectFormatOnSave(configs);
         clearSaveListeners();
