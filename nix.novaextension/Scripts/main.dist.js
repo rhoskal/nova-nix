@@ -3651,5 +3651,4 @@ var deactivate = function () {
 
 exports.activate = activate;
 exports.deactivate = deactivate;
-exports.safeFormat = safeFormat;
 //# sourceMappingURL=main.dist.js.map
