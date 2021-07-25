@@ -1,0 +1,15 @@
+{
+  "Activated": "Aktiviert",
+  "Activating": "Aktivierend",
+  "Deactivating": "Deaktivieren",
+  "Failed to format the document": "Fehler beim Formatieren des Dokuments",
+  "Format document when saved.": "Formatieren Sie das Dokument beim Speichern.",
+  "Format Nix Document": "Nix-Dokument formatieren",
+  "Format on Save": "Formatieren bei Speichern",
+  "Formatted": "Formatiert",
+  "Nix Format Path": "Nix-Formatpfad",
+  "No formatter set": "Kein Formatierersatz",
+  "Skipping": "Seilhüpfen",
+  "Starting extension": "Erweiterung starten",
+  "The path (absolute) to your nixfmt binary.": "Der Pfad (absolut) zu Ihrer nixfmt-Binärdatei."
+}

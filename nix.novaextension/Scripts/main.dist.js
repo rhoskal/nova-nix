@@ -3512,8 +3512,8 @@ var ExtensionConfigKeys;
 var showNotification = function (body) {
     if (nova.inDevMode()) {
         var notification = new NotificationRequest("nix-nova-notification");
-        notification.title = nova.localize(nova.extension.name);
-        notification.body = nova.localize(body);
+        notification.title = nova.extension.name;
+        notification.body = body;
         nova.notifications.add(notification);
     }
 };
@@ -3529,7 +3529,7 @@ var safeFormat = function (editor, formatterPath) {
         });
     }, function () { return ({
         _tag: "invokeFormatterErrror",
-        reason: "Failed to format the document. This is likely a bug with nixfmt.",
+        reason: nova.localize("Failed to format the document") + ".",
     }); });
 };
 /*
@@ -3577,7 +3577,7 @@ var clearSaveListeners = function () {
     saveListeners = new Map();
 };
 var formatDocument = function (editor) {
-    pipe$1(selectFormatterPath(configs), fold(function () { return console.log("Skipping... No formatter set."); }, function (path) {
+    pipe$1(selectFormatterPath(configs), fold(function () { return console.log(nova.localize("Skipping") + "... " + nova.localize("No formatter set") + "."); }, function (path) {
         safeFormat(editor, path)().then(fold$1(function (err) {
             return lib.match(err)
                 .with({ _tag: "invokeFormatterErrror" }, function (_a) {
@@ -3585,12 +3585,12 @@ var formatDocument = function (editor) {
                 return console.error(reason);
             })
                 .exhaustive();
-        }, function () { return console.log("Formatted: " + editor.document.uri); }));
+        }, function () { return console.log(nova.localize("Formatted") + " " + editor.document.path); }));
     }));
 };
 var activate = function () {
-    console.log("Activating...");
-    showNotification("Starting extension...");
+    console.log(nova.localize("Activating") + "...");
+    showNotification(nova.localize("Starting extension") + "...");
     compositeDisposable.add(nova.workspace.onDidAddTextEditor(function (editor) {
         var shouldFormatOnSave = selectFormatOnSave(configs);
         if (shouldFormatOnSave) {
@@ -3630,10 +3630,10 @@ var activate = function () {
             nova.workspace.textEditors.forEach(addSaveListener);
         }
     }));
-    console.log("Activated 🎉");
+    console.log(nova.localize("Activated") + " \uD83C\uDF89");
 };
 var deactivate = function () {
-    console.log("Deactivating...");
+    console.log(nova.localize("Deactivating") + "...");
     clearSaveListeners();
     compositeDisposable.dispose();
 };
