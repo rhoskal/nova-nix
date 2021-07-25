@@ -1,8 +1,25 @@
+## v0.5.0 - 2021-07-25
+
+### Chore & Maintenance
+
+- `[core]` Update dev dependencies
+
+### Features
+
+- `[core]` Add initial localization support for German & French. ([#14](https://github.com/hansjhoffman/nova-nix/pull/14))
+
+### Fixes
+
+- `[formatter]` Only activate on `.nix` files instead of on a workspace that contains `.nix` files. ([#16](https://github.com/hansjhoffman/nova-nix/pull/16))
+- `[formatter]` Restrict format command to only files with `.nix` extension. ([#15](https://github.com/hansjhoffman/nova-nix/pull/15))
+- `[core]` Remove `filesystem` entitlements -- not needed. ([#13](https://github.com/hansjhoffman/nova-nix/pull/13))
+- `[formatter]` Add composite disposable for proper extension cleanup. ([#12](https://github.com/hansjhoffman/nova-nix/pull/12))
+
 ## v0.4.0 - 2021-07-23
 
 ### Chore & Maintenance
 
-- Update extension dependencies
+- `[core]` Update extension dependencies
 
 ### Fixes
 
