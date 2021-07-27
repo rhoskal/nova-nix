@@ -21,19 +21,19 @@ enum ExtensionConfigKeys {
 }
 
 interface ExtensionSettings {
-  workspace: {
+  readonly workspace: Readonly<{
     formatterPath: O.Option<string>;
     formatOnSave: boolean;
-  };
-  global: {
+  }>;
+  readonly global: Readonly<{
     formatterPath: O.Option<string>;
     formatOnSave: boolean;
-  };
+  }>;
 }
 
 interface InvokeFormatterError {
-  _tag: "invokeFormatterError";
-  reason: string;
+  readonly _tag: "invokeFormatterError";
+  readonly reason: string;
 }
 
 /*
