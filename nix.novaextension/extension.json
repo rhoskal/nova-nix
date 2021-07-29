@@ -10,15 +10,11 @@
   "bugs": {
     "url": "https://github.com/hansjhoffman/nova-nix/issues"
   },
-
-  "main": "main.dist.js",
-
+  "main": "main.cjs.min.js",
   "activationEvents": ["onLanguage:nix"],
-
   "entitlements": {
     "process": true
   },
-
   "config": [
     {
       "key": "hansjhoffman.nix.config.nixFormatPath",
@@ -35,7 +31,6 @@
       "default": false
     }
   ],
-
   "configWorkspace": [
     {
       "key": "hansjhoffman.nix.config.nixFormatPath",
@@ -52,7 +47,6 @@
       "default": false
     }
   ],
-
   "commands": {
     "editor": [
       {
