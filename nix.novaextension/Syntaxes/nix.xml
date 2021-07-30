@@ -425,57 +425,71 @@
 
             <!-- Operators -->
             <scope name="nix.operator">
+                <!-- -> -->
                 <expression>(\-&gt;)</expression>
             </scope>
             <scope name="nix.operator">
+                <!-- || -->
                 <expression>(\|\|)</expression>
             </scope>
             <scope name="nix.operator">
+                <!-- && -->
                 <expression>(&amp;&amp;)</expression>
             </scope>
             <scope name="nix.operator">
-                <expression>(\=)</expression>
-            </scope>
-            <scope name="nix.operator">
+                <!-- != -->
                 <expression>(!\=)</expression>
             </scope>
             <scope name="nix.operator">
+                <!-- == -->
                 <expression>(\=\=)</expression>
             </scope>
             <scope name="nix.operator">
+                <!-- <= -->
                 <expression>(?&lt;=[0-9])\s*(&lt;\=)\s*(?=[0-9])</expression>
             </scope>
             <scope name="nix.operator">
+                <!-- >= -->
                 <expression>(?&lt;=[0-9])\s*(&gt;\=)\s*(?=[0-9])</expression>
             </scope>
             <scope name="nix.operator">
+                <!-- // -->
                 <expression>(\/\/)</expression>
             </scope>
             <scope name="nix.operator">
+                <!-- < -->
                 <expression>(?&lt;=[0-9])\s*(&lt;)\s*(?=[0-9])</expression>
             </scope>
             <scope name="nix.operator">
+                <!-- > -->
                 <expression>(?&lt;=[0-9])\s*(&gt;)\s*(?=[0-9])</expression>
             </scope>
             <scope name="nix.operator">
+                <!-- ++ -->
                 <expression>(\+\+)</expression>
             </scope>
             <scope name="nix.operator">
+                <!-- ! -->
                 <expression>(!)</expression>
             </scope>
             <scope name="nix.operator">
+                <!-- - -->
                 <expression>(?&lt;=[0-9])\s*(\-)\s*(?=[0-9])</expression>
             </scope>
             <scope name="nix.operator">
+                <!-- + -->
                 <expression>(\+)</expression>
             </scope>
             <scope name="nix.operator">
+                <!-- * -->
                 <expression>(\*)</expression>
             </scope>
             <scope name="nix.operator">
+                <!-- / -->
                 <expression>(?&lt;=[0-9])\s*(\/)\s*(?=[0-9])</expression>
             </scope>
             <scope name="nix.operator">
+                <!-- ? -->
                 <expression>(\?)</expression>
             </scope>
         </collection>
