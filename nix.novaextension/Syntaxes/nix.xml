@@ -194,6 +194,7 @@
                     <include syntax="self" collection="comments" />
                     <include syntax="self" collection="values" />
                     <include syntax="self" collection="identifiers" />
+                    <include syntax="self" collection="syntax" />
                 </subscopes>
             </scope>
             <scope name="nix.collections.set">
