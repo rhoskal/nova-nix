@@ -5,4 +5,79 @@
         <selector>nix</selector>
         <expression>\b[a-zA-Z0-9-_]*</expression>
     </provider>
+    
+    <!-- builtins -->
+    <!-- <string>abort</string>
+    <string>add</string>
+    <string>all</string>
+    <string>any</string>
+    <string>attrNames</string>
+    <string>attrValues</string>
+    <string>bitAnd</string>
+    <string>bitOr</string>
+    <string>bitXor</string>
+    <string>compareVersions</string>
+    <string>concatLists</string>
+    <string>concatStringsSep</string>
+    <string>currentSystem</string>
+    <string>deepSeq</string>
+    <string>dirOf</string>
+    <string>div</string>
+    <string>elem</string>
+    <string>elemAt</string>
+    <string>fetchurl</string>
+    <string>fetchGit</string>
+    <string>fetchTarball</string>
+    <string>filter</string>
+    <string>filterSource</string>
+    <string>foldl’</string>
+    <string>functionArgs</string>
+    <string>fromJSON</string>
+    <string>genList</string>
+    <string>getAttr</string>
+    <string>getEnv</string>
+    <string>hasAttr</string>
+    <string>hashString</string>
+    <string>hashFile</string>
+    <string>head</string>
+    <string>import</string>
+    <string>intersectAttrs</string>
+    <string>isAttrs</string>
+    <string>isList</string>
+    <string>isFunction</string>
+    <string>isString</string>
+    <string>isInt</string>
+    <string>isFloat</string>
+    <string>isBool</string>
+    <string>isPath</string>
+    <string>isNull</string>
+    <string>length</string>
+    <string>lessThan</string>
+    <string>listToAttrs</string>
+    <string>map</string>
+    <string>match</string>
+    <string>mul</string>
+    <string>parseDrvName</string>
+    <string>path</string>
+    <string>pathExists</string>
+    <string>placeholder</string>
+    <string>readDir</string>
+    <string>readFile</string>
+    <string>replaceStrings</string>
+    <string>seq</string>
+    <string>sort</string>
+    <string>split</string>
+    <string>splitVersion</string>
+    <string>stringLength</string>
+    <string>sub</string>
+    <string>substring</string>
+    <string>tail</string>
+    <string>toFile</string>
+    <string>toJSON</string>
+    <string>toPath</string>
+    <string>toString</string>
+    <string>toXML</string>
+    <string>trace</string>
+    <string>tryEval</string>
+    <string>typeOf</string> -->
 </completions>
