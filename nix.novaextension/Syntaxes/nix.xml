@@ -71,12 +71,12 @@
         `Y8bod8P' `Y8bod8P' o888o o888o o888o o888o o888o o888o `Y8bod8P' o888o o888o   "888" 8""888P' 
         -->
         <collection name="comments">
-            <scope name="nix.comment.single" spell-check="true">
+            <scope name="nix.comment.line" spell-check="true">
                 <expression>(\#)(.*)$</expression>
                 <capture number="1" name="nix.puncuation.definition.begin" />
                 <capture number="2" name="nix.comment.content" />
             </scope>
-            <scope name="nix.comment.multiline" spell-check="true">
+            <scope name="nix.comment.block" spell-check="true">
                 <symbol type="comment">
                     <context behavior="subtree" />
                 </symbol>
@@ -104,11 +104,11 @@
             <scope name="nix.definition.function">
                 <starts-with>
                     <expression>^(\{)</expression>
-                    <capture number="0" name="nix.bracket" />
+                    <capture number="0" name="nix.bracket.curly.open" />
                 </starts-with>
                 <ends-with>
                     <expression>(\})(?:\:)</expression>
-                    <capture number="0" name="nix.bracket" />
+                    <capture number="0" name="nix.bracket.curly.close" />
                 </ends-with>
                 <subscopes>
                     <include syntax="self" collection="values" />
@@ -178,38 +178,42 @@
             <scope name="nix.value.number.integer">
                 <expression>\b(?!0\d+)(\-?\d+)\b</expression>
             </scope>
-            <scope name="nix.collection.list">
+            <scope name="nix.collections.list">
+                <symbol type="block">
+                    <context behavior="subtree" fold-type="function" />
+                </symbol>
                 <starts-with>
                     <expression>\[</expression>
-                    <capture number="0" name="nix.bracket" />
+                    <capture number="0" name="nix.bracket.square.open" />
                 </starts-with>
                 <ends-with>
                     <expression>\]</expression>
-                    <capture number="0" name="nix.bracket" />
+                    <capture number="0" name="nix.bracket.square.close" />
                 </ends-with>
                 <subscopes>
                     <include syntax="self" collection="comments" />
                     <include syntax="self" collection="values" />
+                    <include syntax="self" collection="identifiers" />
                 </subscopes>
             </scope>
-            <scope name="nix.collection.set">
+            <scope name="nix.collections.set">
+                <symbol type="block">
+                    <context behavior="subtree" />
+                </symbol>
                 <starts-with>
-                    <expression>\{</expression>
-                    <capture number="0" name="nix.bracket" />
+                    <expression>{</expression>
+                    <capture number="0" name="nix.bracket.curly.open" />
                 </starts-with>
                 <ends-with>
-                    <expression>\}</expression>
-                    <capture number="0" name="nix.bracket" />
+                    <expression>}</expression>
+                    <capture number="0" name="nix.bracket.curly.close" />
                 </ends-with>
                 <subscopes>
                     <include syntax="self" collection="comments" />
-                    <include syntax="self" collection="values" />
                     <include syntax="self" collection="keywords" />
+                    <include syntax="self" collection="values" />
+                    <include syntax="self" collection="identifiers" />
                     <include syntax="self" collection="syntax" />
-                    <scope name="nix.set.keys">
-                        <expression>\b([A-Za-z0-9_]+)\s*(?=\=)</expression>
-                        <capture number="1" name="nix.identifier.key" />
-                    </scope>
                 </subscopes>
             </scope>
             <include syntax="self" collection="strings" />
@@ -225,10 +229,20 @@
             o888o `Y8bod88P" `Y8bod8P' o888o o888o   "888" o888o o888o   o888o `Y8bod8P' d888b    8""888P' 
         -->
         <collection name="identifiers">
-            <scope name="nix.identifier.variable">
-                <expression>([A-Za-z0-9_]+)\s*(?=\=)</expression>
+            <scope name="nix.assignments">
+                <expression>
+                    (?x:               # turn on extended mode, allows arbitrary whitespace
+                       \s*             # whitespace
+                       ([A-Za-z0-9_]+) # normal characters
+                       [ \t]*          # some ammount of non-linebreak whitespace
+                       (\=)            # equals sign
+                       (?![&gt;\=])    # negative lookahead not another operator
+                    )
+                </expression>
+                <capture number="1" name="nix.identifier.property" />
+                <capture number="2" name="nix.operator" />
             </scope>
-            <scope name="nix.identifier.core.method">
+            <scope name="nix.identifier.core.function">
                 <strings>
                     <string>import</string>
                     
@@ -307,6 +321,10 @@
                     <string>builtins.typeOf</string>
                 </strings>
             </scope>
+            <scope name="nix.reference">
+                <expression>([A-Za-z0-9_-]+)</expression>
+                <capture number="1" name="nix.identifier.variable" />
+            </scope>
         </collection>
    
         <!--
@@ -320,45 +338,7 @@
                                                     d"     YD           
                                                     "Y88888P'  
         -->
-        <collection name="strings">
-            <scope name="nix.string.multiline">
-                <symbol type="comment">
-                    <context behavior="subtree" />
-                </symbol>
-                <starts-with>
-                    <expression>&apos;&apos;</expression>
-                </starts-with>
-                <ends-with>
-                    <expression>&apos;&apos;</expression>
-                </ends-with>
-                <subscopes>
-                    <include syntax="self" collection="string-template" />
-                </subscopes>
-            </scope>
-            <scope name="nix.string.double-quoted">
-                <starts-with>
-                    <expression>&quot;</expression>
-                    <capture number="0" name="nix.string.quoted.double" />
-                </starts-with>
-                <ends-with>
-                    <expression>&quot;|(?:(?&lt;!\\)$)</expression>
-                    <capture number="0" name="nix.string.quoted.double" />
-                </ends-with>
-                <subscopes>
-                    <scope name="nix.string.quoted.escape">
-                        <expression>\\(?:\\|&quot;|n|r|t|b|f)</expression>
-                    </scope>
-                    <include syntax="self" collection="string-template" />
-                </subscopes>
-            </scope>
-            <scope name="nix.string.paths-with-brackets">
-                <expression>(&lt;[a-z][A-Za-z0-9]*&gt;)</expression>
-            </scope>
-            <scope name="nix.string.paths-with-slashes">
-                <expression>(\.?\/[A-Za-z0-9_\.\-]+)</expression>
-            </scope>
-        </collection>
-        <collection name="string-template">
+        <collection name="interpolations">
             <scope>
                 <starts-with>
                     <expression>(\$\{)</expression>
@@ -376,6 +356,44 @@
                         <capture number="1" name="nix.string-template.value" />
                     </scope>
                 </subscopes>
+            </scope>
+        </collection>
+        <collection name="strings">
+            <scope name="nix.string.multiline">
+                <symbol type="comment">
+                    <context behavior="subtree" />
+                </symbol>
+                <starts-with>
+                    <expression>&apos;&apos;</expression>
+                </starts-with>
+                <ends-with>
+                    <expression>&apos;&apos;</expression>
+                </ends-with>
+                <subscopes>
+                    <include syntax="self" collection="interpolations" />
+                </subscopes>
+            </scope>
+            <scope name="nix.string.double-quoted">
+                <starts-with>
+                    <expression>&quot;</expression>
+                    <capture number="0" name="nix.string.quoted.double" />
+                </starts-with>
+                <ends-with>
+                    <expression>&quot;|(?:(?&lt;!\\)$)</expression>
+                    <capture number="0" name="nix.string.quoted.double" />
+                </ends-with>
+                <subscopes>
+                    <scope name="nix.string.quoted.escape">
+                        <expression>\\(?:\\|&quot;|n|r|t|b|f)</expression>
+                    </scope>
+                    <include syntax="self" collection="interpolations" />
+                </subscopes>
+            </scope>
+            <scope name="nix.string.paths-with-brackets">
+                <expression>(&lt;[a-z][A-Za-z0-9]*&gt;)</expression>
+            </scope>
+            <scope name="nix.string.paths-with-slashes">
+                <expression>(\.?\/[A-Za-z0-9_\.\-]+)</expression>
             </scope>
         </collection>
         
@@ -414,6 +432,9 @@
             </scope>
             <scope name="nix.operator">
                 <expression>(&amp;&amp;)</expression>
+            </scope>
+            <scope name="nix.operator">
+                <expression>(\=)</expression>
             </scope>
             <scope name="nix.operator">
                 <expression>(!\=)</expression>
