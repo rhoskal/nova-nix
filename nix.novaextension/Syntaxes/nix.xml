@@ -322,7 +322,14 @@
                 </strings>
             </scope>
             <scope name="nix.reference">
-                <expression>([A-Za-z0-9_-]+)</expression>
+                <expression>
+                    (?x:                   # turn on extended mode, allows arbitrary whitespace
+                        (
+                            \w+            # Any word character
+                            |(?&lt;=\w)-   # or a hyphen (-) but only if proceeded by a word character
+                        )
+                    )
+                </expression>
                 <capture number="1" name="nix.identifier.variable" />
             </scope>
         </collection>
@@ -410,17 +417,14 @@
         -->
         <collection name="syntax">
             <!-- Brackets -->
-            <scope name="nix.bracket">
+            <scope name="nix.bracket.curly">
                 <expression>(\{ | \})</expression>
             </scope>
-            <scope name="nix.bracket">
+            <scope name="nix.bracket.square">
                 <expression>(\[ | \])</expression>
             </scope>
-            <scope name="nix.bracket">
+            <scope name="nix.bracket.parens">
                 <expression>(\( | \))</expression>
-            </scope>
-            <scope name="nix.bracket">
-                <expression>(&lt; | &gt;)</expression>
             </scope>
 
             <!-- Operators -->
