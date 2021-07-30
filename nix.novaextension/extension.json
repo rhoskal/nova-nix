@@ -3,7 +3,7 @@
   "name": "Nix",
   "organization": "@hansjhoffman",
   "description": "Provides syntax highlighting and formatting for Nix.",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "categories": ["commands", "formatters", "languages"],
   "license": "MIT",
   "repository": "https://github.com/hansjhoffman/nova-nix",

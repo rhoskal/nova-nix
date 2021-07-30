@@ -1,3 +1,21 @@
+## v0.6.0 - 2021-07-30
+
+### Chore & Maintenance
+
+- `[core]` Minimize build output. ([#19](https://github.com/hansjhoffman/nova-nix/pull/19))
+- `[core]` Use readonly types. ([#18](https://github.com/hansjhoffman/nova-nix/pull/18))
+- `[core]` Update extension & dev dependencies
+
+### Features
+
+- `[syntax]` Add collapsing for collections (set & list). ([#20](https://github.com/hansjhoffman/nova-nix/pull/20))
+- `[syntax]` Improve list collections by including identifiers & syntax. ([#20](https://github.com/hansjhoffman/nova-nix/pull/20))
+- `[syntax]` Add highlighting for variable references. ([#20](https://github.com/hansjhoffman/nova-nix/pull/20))
+
+### Fixes
+
+- `[syntax]` Prevent assignments matching in the presence of a subsequent operator (e.g. <, =). ([#20](https://github.com/hansjhoffman/nova-nix/pull/20))
+
 ## v0.5.0 - 2021-07-25
 
 ### Chore & Maintenance
