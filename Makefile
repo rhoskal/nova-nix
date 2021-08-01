@@ -36,7 +36,7 @@ targets:
 
 .PHONY: build
 build: ## Make a production build
-	rollup --config rollup.config.ts --configPlugin typescript
+	yarn rollup --config rollup.config.ts --configPlugin typescript
 
 .PHONY: clean
 clean: ## Remove build artifacts
