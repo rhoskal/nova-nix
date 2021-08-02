@@ -43,8 +43,10 @@ interface InvokeFormatterError {
 const showNotification = (body: string): void => {
   if (nova.inDevMode()) {
     const notification = new NotificationRequest("nix-nova-notification");
+
     notification.title = nova.extension.name;
     notification.body = body;
+
     nova.notifications.add(notification);
   }
 };
@@ -108,7 +110,7 @@ let configs: ExtensionSettings = {
 const workspaceConfigsLens = Lens.fromPath<ExtensionSettings>()(["workspace"]);
 const globalConfigsLens = Lens.fromPath<ExtensionSettings>()(["global"]);
 
-const compositeDisposable: CompositeDisposable = new CompositeDisposable();
+const extensionDisposable: CompositeDisposable = new CompositeDisposable();
 let saveListeners: Map<string, Disposable> = new Map();
 
 /**
@@ -182,7 +184,7 @@ export const activate = (): void => {
   console.log(`${nova.localize("Activating")}...`);
   showNotification(`${nova.localize("Starting extension")}...`);
 
-  compositeDisposable.add(
+  extensionDisposable.add(
     nova.workspace.onDidAddTextEditor((editor: TextEditor): void => {
       const shouldFormatOnSave = selectFormatOnSave(configs);
 
@@ -192,11 +194,11 @@ export const activate = (): void => {
     }),
   );
 
-  compositeDisposable.add(
+  extensionDisposable.add(
     nova.commands.register(ExtensionConfigKeys.FormatDocument, formatDocument),
   );
 
-  compositeDisposable.add(
+  extensionDisposable.add(
     nova.workspace.config.onDidChange<unknown>(
       ExtensionConfigKeys.FormatterPath,
       (newValue, _oldValue): void => {
@@ -215,7 +217,7 @@ export const activate = (): void => {
     ),
   );
 
-  compositeDisposable.add(
+  extensionDisposable.add(
     nova.workspace.config.onDidChange<unknown>(
       ExtensionConfigKeys.FormatOnSave,
       (newValue, _oldValue): void => {
@@ -238,7 +240,7 @@ export const activate = (): void => {
     ),
   );
 
-  compositeDisposable.add(
+  extensionDisposable.add(
     nova.config.onDidChange<unknown>(
       ExtensionConfigKeys.FormatterPath,
       (newValue, _oldValue): void => {
@@ -257,7 +259,7 @@ export const activate = (): void => {
     ),
   );
 
-  compositeDisposable.add(
+  extensionDisposable.add(
     nova.config.onDidChange<unknown>(
       ExtensionConfigKeys.FormatOnSave,
       (newValue, _oldValue): void => {
@@ -287,5 +289,5 @@ export const deactivate = (): void => {
   console.log(`${nova.localize("Deactivating")}...`);
 
   clearSaveListeners();
-  compositeDisposable.dispose();
+  extensionDisposable.dispose();
 };
