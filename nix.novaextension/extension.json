@@ -52,7 +52,11 @@
       {
         "title": "Format Nix Document",
         "command": "hansjhoffman.nix.commands.formatDocument",
-        "when": "editorSyntax == 'nix'"
+        "shortcut": "opt-shift-f",
+        "when": "editorHasFocus",
+        "filters": {
+          "syntaxes": ["nix"]
+        }
       }
     ]
   }
