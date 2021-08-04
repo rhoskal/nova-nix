@@ -20,15 +20,14 @@ enum ExtensionConfigKeys {
   FormatDocument = "hansjhoffman.nix.commands.formatDocument",
 }
 
-interface ExtensionSettings {
-  readonly workspace: Readonly<{
-    formatterPath: O.Option<string>;
-    formatOnSave: boolean;
-  }>;
-  readonly global: Readonly<{
-    formatterPath: O.Option<string>;
-    formatOnSave: boolean;
-  }>;
+interface Preferences {
+  readonly formatterPath: O.Option<string>;
+  readonly formatOnSave: O.Option<boolean>;
+}
+
+interface UserPreferences {
+  readonly workspace: Readonly<Preferences>;
+  readonly global: Readonly<Preferences>;
 }
 
 interface InvokeFormatterError {
@@ -43,8 +42,10 @@ interface InvokeFormatterError {
 const showNotification = (body: string): void => {
   if (nova.inDevMode()) {
     const notification = new NotificationRequest("nix-nova-notification");
+
     notification.title = nova.extension.name;
     notification.body = body;
+
     nova.notifications.add(notification);
   }
 };
@@ -78,12 +79,11 @@ const safeFormat = (
  * Main
  */
 
-let configs: ExtensionSettings = {
+let preferences: UserPreferences = {
   workspace: {
     formatOnSave: pipe(
       O.fromNullable(nova.workspace.config.get(ExtensionConfigKeys.FormatOnSave)),
       O.chain((value) => O.fromEither(D.boolean.decode(value))),
-      O.getOrElseW(() => false),
     ),
     formatterPath: pipe(
       O.fromNullable(nova.workspace.config.get(ExtensionConfigKeys.FormatterPath)),
@@ -95,7 +95,6 @@ let configs: ExtensionSettings = {
     formatOnSave: pipe(
       O.fromNullable(nova.config.get(ExtensionConfigKeys.FormatOnSave)),
       O.chain((value) => O.fromEither(D.boolean.decode(value))),
-      O.getOrElseW(() => false),
     ),
     formatterPath: pipe(
       O.fromNullable(nova.config.get(ExtensionConfigKeys.FormatterPath)),
@@ -105,30 +104,30 @@ let configs: ExtensionSettings = {
   },
 };
 
-const workspaceConfigsLens = Lens.fromPath<ExtensionSettings>()(["workspace"]);
-const globalConfigsLens = Lens.fromPath<ExtensionSettings>()(["global"]);
+const workspaceConfigsLens = Lens.fromPath<UserPreferences>()(["workspace"]);
+const globalConfigsLens = Lens.fromPath<UserPreferences>()(["global"]);
 
-const compositeDisposable: CompositeDisposable = new CompositeDisposable();
+const extensionDisposable: CompositeDisposable = new CompositeDisposable();
 let saveListeners: Map<string, Disposable> = new Map();
 
 /**
  * Gets a value giving precedence to workspace over global extension values.
- * @param {ExtensionSettings} configs - extension settings
+ * @param {UserPreferences} preferences - extension settings
  */
-const selectFormatOnSave = (configs: ExtensionSettings): boolean => {
-  const workspace = workspaceConfigsLens.get(configs);
-  const global = globalConfigsLens.get(configs);
+const selectFormatOnSave = (preferences: UserPreferences): boolean => {
+  const workspace = workspaceConfigsLens.get(preferences);
+  const global = globalConfigsLens.get(preferences);
 
-  return workspace.formatOnSave || global.formatOnSave;
+  return O.isSome(workspace.formatOnSave) || O.isSome(global.formatOnSave);
 };
 
 /**
  * Gets a value giving precedence to workspace over global extension values.
- * @param {ExtensionSettings} configs - extension settings
+ * @param {UserPreferences} preferences - extension settings
  */
-const selectFormatterPath = (configs: ExtensionSettings): O.Option<string> => {
-  const workspace = workspaceConfigsLens.get(configs);
-  const global = globalConfigsLens.get(configs);
+const selectFormatterPath = (preferences: UserPreferences): O.Option<string> => {
+  const workspace = workspaceConfigsLens.get(preferences);
+  const global = globalConfigsLens.get(preferences);
 
   return pipe(
     workspace.formatterPath,
@@ -159,7 +158,7 @@ const clearSaveListeners = (): void => {
 
 const formatDocument = (editor: TextEditor): void => {
   pipe(
-    selectFormatterPath(configs),
+    selectFormatterPath(preferences),
     O.fold(
       () => console.log(`${nova.localize("Skipping")}... ${nova.localize("No formatter set")}.`),
       (path) => {
@@ -182,9 +181,9 @@ export const activate = (): void => {
   console.log(`${nova.localize("Activating")}...`);
   showNotification(`${nova.localize("Starting extension")}...`);
 
-  compositeDisposable.add(
+  extensionDisposable.add(
     nova.workspace.onDidAddTextEditor((editor: TextEditor): void => {
-      const shouldFormatOnSave = selectFormatOnSave(configs);
+      const shouldFormatOnSave = selectFormatOnSave(preferences);
 
       if (shouldFormatOnSave) {
         addSaveListener(editor);
@@ -192,20 +191,20 @@ export const activate = (): void => {
     }),
   );
 
-  compositeDisposable.add(
+  extensionDisposable.add(
     nova.commands.register(ExtensionConfigKeys.FormatDocument, formatDocument),
   );
 
-  compositeDisposable.add(
+  extensionDisposable.add(
     nova.workspace.config.onDidChange<unknown>(
       ExtensionConfigKeys.FormatterPath,
       (newValue, _oldValue): void => {
-        configs = workspaceConfigsLens.modify((prevWorkspace) => ({
+        preferences = workspaceConfigsLens.modify((prevWorkspace) => ({
           ...prevWorkspace,
           formatterPath: O.fromEither(D.string.decode(newValue)),
-        }))(configs);
+        }))(preferences);
 
-        const shouldFormatOnSave = selectFormatOnSave(configs);
+        const shouldFormatOnSave = selectFormatOnSave(preferences);
 
         if (shouldFormatOnSave) {
           clearSaveListeners();
@@ -215,19 +214,16 @@ export const activate = (): void => {
     ),
   );
 
-  compositeDisposable.add(
+  extensionDisposable.add(
     nova.workspace.config.onDidChange<unknown>(
       ExtensionConfigKeys.FormatOnSave,
       (newValue, _oldValue): void => {
-        configs = workspaceConfigsLens.modify((prevWorkspace) => ({
+        preferences = workspaceConfigsLens.modify((prevWorkspace) => ({
           ...prevWorkspace,
-          formatOnSave: pipe(
-            D.boolean.decode(newValue),
-            E.getOrElseW(() => false),
-          ),
-        }))(configs);
+          formatOnSave: O.fromEither(D.boolean.decode(newValue)),
+        }))(preferences);
 
-        const shouldFormatOnSave = selectFormatOnSave(configs);
+        const shouldFormatOnSave = selectFormatOnSave(preferences);
 
         clearSaveListeners();
 
@@ -238,16 +234,16 @@ export const activate = (): void => {
     ),
   );
 
-  compositeDisposable.add(
+  extensionDisposable.add(
     nova.config.onDidChange<unknown>(
       ExtensionConfigKeys.FormatterPath,
       (newValue, _oldValue): void => {
-        configs = globalConfigsLens.modify((prevGlobal) => ({
+        preferences = globalConfigsLens.modify((prevGlobal) => ({
           ...prevGlobal,
           formatterPath: O.fromEither(D.string.decode(newValue)),
-        }))(configs);
+        }))(preferences);
 
-        const shouldFormatOnSave = selectFormatOnSave(configs);
+        const shouldFormatOnSave = selectFormatOnSave(preferences);
 
         if (shouldFormatOnSave) {
           clearSaveListeners();
@@ -257,19 +253,16 @@ export const activate = (): void => {
     ),
   );
 
-  compositeDisposable.add(
+  extensionDisposable.add(
     nova.config.onDidChange<unknown>(
       ExtensionConfigKeys.FormatOnSave,
       (newValue, _oldValue): void => {
-        configs = globalConfigsLens.modify((prevGlobal) => ({
+        preferences = globalConfigsLens.modify((prevGlobal) => ({
           ...prevGlobal,
-          formatOnSave: pipe(
-            D.boolean.decode(newValue),
-            E.getOrElseW(() => false),
-          ),
-        }))(configs);
+          formatOnSave: O.fromEither(D.boolean.decode(newValue)),
+        }))(preferences);
 
-        const shouldFormatOnSave = selectFormatOnSave(configs);
+        const shouldFormatOnSave = selectFormatOnSave(preferences);
 
         clearSaveListeners();
 
@@ -287,5 +280,5 @@ export const deactivate = (): void => {
   console.log(`${nova.localize("Deactivating")}...`);
 
   clearSaveListeners();
-  compositeDisposable.dispose();
+  extensionDisposable.dispose();
 };

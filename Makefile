@@ -70,6 +70,6 @@ lint-fix: ## Lint code w/ fixes
 	yarn eslint 'src/**/*.ts' --fix
 
 
-.PHONY: watch
-watch: ## Watch for code changes and recompile
-	yarn watch
+.PHONY: run
+run: ## Watch for code changes and recompile
+	yarn watch 'yarn build' src
