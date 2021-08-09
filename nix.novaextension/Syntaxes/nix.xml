@@ -107,8 +107,9 @@
                     <capture number="0" name="nix.bracket.curly.open" />
                 </starts-with>
                 <ends-with>
-                    <expression>(\})(?:\:)</expression>
-                    <capture number="0" name="nix.bracket.curly.close" />
+                    <expression>(\})(:)</expression>
+                    <capture number="1" name="nix.bracket.curly.close" />
+                    <capture number="2" name="nix.colon" />
                 </ends-with>
                 <subscopes>
                     <include syntax="self" collection="values" />
