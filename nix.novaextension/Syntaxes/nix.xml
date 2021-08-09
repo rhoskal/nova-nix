@@ -356,73 +356,86 @@
             </scope>
 
             <!-- Operators -->
-            <scope name="nix.operator">
+            <scope name="nix.operator.arrow">
                 <!-- -> -->
                 <expression>(\-&gt;)</expression>
             </scope>
-            <scope name="nix.operator">
+            <scope name="nix.operator.or">
                 <!-- || -->
                 <expression>(\|\|)</expression>
             </scope>
-            <scope name="nix.operator">
+            <scope name="nix.operator.and">
                 <!-- && -->
                 <expression>(&amp;&amp;)</expression>
             </scope>
-            <scope name="nix.operator">
+            <scope name="nix.operator.neq">
                 <!-- != -->
                 <expression>(!\=)</expression>
             </scope>
-            <scope name="nix.operator">
+            <scope name="nix.operator.eq">
                 <!-- == -->
                 <expression>(\=\=)</expression>
             </scope>
-            <scope name="nix.operator">
+            <scope name="nix.operator.le">
                 <!-- <= -->
-                <expression>(?&lt;=[0-9])\s*(&lt;\=)\s*(?=[0-9])</expression>
+                <expression>(&lt;\=)</expression>
             </scope>
-            <scope name="nix.operator">
+            <scope name="nix.operator.ge">
                 <!-- >= -->
-                <expression>(?&lt;=[0-9])\s*(&gt;\=)\s*(?=[0-9])</expression>
+                <expression>(&gt;\=)</expression>
             </scope>
-            <scope name="nix.operator">
+            <scope name="nix.operator.idiv">
                 <!-- // -->
                 <expression>(\/\/)</expression>
             </scope>
-            <scope name="nix.operator">
+            <scope name="nix.operator.lt">
                 <!-- < -->
-                <expression>(?&lt;=[0-9])\s*(&lt;)\s*(?=[0-9])</expression>
+                <expression>(&lt;)</expression>
             </scope>
-            <scope name="nix.operator">
+            <scope name="nix.operator.gt">
                 <!-- > -->
-                <expression>(?&lt;=[0-9])\s*(&gt;)\s*(?=[0-9])</expression>
+                <expression>(&gt;)</expression>
             </scope>
-            <scope name="nix.operator">
+            <scope name="nix.operator.append">
                 <!-- ++ -->
                 <expression>(\+\+)</expression>
             </scope>
-            <scope name="nix.operator">
+            <scope name="nix.operator.not">
                 <!-- ! -->
                 <expression>(!)</expression>
             </scope>
-            <scope name="nix.operator">
+            <scope name="nix.operator.sub">
                 <!-- - -->
-                <expression>(?&lt;=[0-9])\s*(\-)\s*(?=[0-9])</expression>
+                <expression>(\-)</expression>
             </scope>
-            <scope name="nix.operator">
+            <scope name="nix.operator.add">
                 <!-- + -->
                 <expression>(\+)</expression>
             </scope>
-            <scope name="nix.operator">
+            <scope name="nix.operator.mul">
                 <!-- * -->
                 <expression>(\*)</expression>
             </scope>
-            <scope name="nix.operator">
+            <scope name="nix.operator.div">
                 <!-- / -->
-                <expression>(?&lt;=[0-9])\s*(\/)\s*(?=[0-9])</expression>
+                <expression>(\/)</expression>
             </scope>
-            <scope name="nix.operator">
+            <scope name="nix.operator.qmark">
                 <!-- ? -->
                 <expression>(\?)</expression>
+            </scope>
+            
+            <scope name="nix.colon">
+                <expression>:</expression>
+            </scope>
+            <scope name="nix.comma">
+                <expression>,</expression>
+            </scope>
+            <scope name="nix.dot">
+                <expression>\.</expression>
+            </scope>
+            <scope name="nix.semicolon">
+                <expression>;</expression>
             </scope>
         </collection>
     </collections>
