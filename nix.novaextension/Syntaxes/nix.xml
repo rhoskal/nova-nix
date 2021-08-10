@@ -419,7 +419,7 @@
             </scope>
             <scope name="nix.operator.div">
                 <!-- / -->
-                <expression>\h+(\/)\h+</expression>
+                <expression>(\/)\h+</expression>
             </scope>
             <scope name="nix.operator.qmark">
                 <!-- ? -->
