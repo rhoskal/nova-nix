@@ -159,6 +159,7 @@
             `8'     `Y888""8o o888o  `V88V"V8P' `Y8bod8P' 8""888P'                                  
         -->
         <collection name="values">
+            <include syntax="self" collection="strings" />
             <scope name="nix.value.boolean">
                 <strings>
                     <string>true</string>
@@ -218,7 +219,6 @@
                     <include syntax="self" collection="syntax" />
                 </subscopes>
             </scope>
-            <include syntax="self" collection="strings" />
         </collection>
 
         <!-- 
@@ -326,7 +326,7 @@
                 <expression>(&lt;[a-z][A-Za-z0-9]*&gt;)</expression>
             </scope>
             <scope name="nix.string.paths-with-slashes">
-                <expression>(\.?\/[A-Za-z0-9_\.\-]+)</expression>
+                <expression>([A-Za-z0-9_\-\.\/]+(?=\/)[A-Za-z0-9_\-\.\/]*)</expression>
             </scope>
         </collection>
         
