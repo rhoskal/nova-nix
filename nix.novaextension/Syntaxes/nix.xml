@@ -296,6 +296,9 @@
         </collection>
         <collection name="strings">
             <scope name="nix.string.multiline">
+                <symbol type="comment">
+                    <context behavior="subtree" />
+                </symbol>
                 <starts-with>
                     <expression>&apos;&apos;</expression>
                 </starts-with>
@@ -307,6 +310,9 @@
                 </subscopes>
             </scope>
             <scope name="nix.string.double-quoted">
+                <symbol type="comment">
+                    <context behavior="subtree" />
+                </symbol>
                 <starts-with>
                     <expression>&quot;</expression>
                     <capture number="0" name="nix.string.quoted.double" />
