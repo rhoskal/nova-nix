@@ -420,9 +420,10 @@
                 <!-- * -->
                 <expression>(\*)</expression>
             </scope>
-            <scope name="nix.operator.div">
+            <scope name="nix.div-followed-by-required-space">
                 <!-- / -->
-                <expression>(\/)</expression>
+                <expression>(\/)(?:\h)</expression>
+                <capture number="1" name="nix.operator.div" />
             </scope>
             <scope name="nix.operator.qmark">
                 <!-- ? -->

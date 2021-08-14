@@ -10,19 +10,50 @@ assert sslSupport -> openssl != null
 assert pythonBindings -> swig != null || swig.pythonSupport;
 assert javaSwigBindings -> swig != null && swig.javaSupport;
 assert javahlBindings -> j2sdk != null;
-assert 3 > -2 == true;
-assert 2 < 3 == false;
-assert 2 <= 3 == true;
-assert 3 >= 1 == true;
-assert 3 / 3 == 1;
-assert 3 // 2 == 1;
-assert 4 != 5;
-assert 3 * 5 == 15;
-assert !true == false;
-assert 5 - 4 == 1;
-assert 3 + 4 == 7;
-assert [ 1 2 ] ++ [ 3 4 ] == [ 1 2 3 4 ];
-assert !e1 || e2;
+
+arithemtic = [
+  (3 > -2)
+  #> true
+  
+  (2 < 3)
+  #> false
+  
+  (2 <= 3)
+  #> true
+  
+  (3 >= 1)
+  #> true
+  
+  (3 / 3)
+  #> 1
+  
+  ({ a = 1; } // { b = 2; })
+  #> { a = 1; b = 2; }
+  
+  (4 != 5)
+  #> true
+  
+  (3 * 5)
+  #> 15
+  
+  (!true)
+  #> false
+  
+  (5 - 4)
+  #> 1
+  
+  (3 + 4)
+  #> 7
+  
+  ([ 1 2 ] ++ [ 3 4 ])
+  #> [ 1 2 3 4 ]
+  
+  (true || false)
+  #> true
+  
+  (true && false)
+  #> false
+]
 
 stdenv.mkDerivation {
   name = "subversion-1.1.1";
