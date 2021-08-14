@@ -310,12 +310,15 @@
                 </subscopes>
             </scope>
             <scope name="nix.string.double-quoted">
+                <symbol type="comment">
+                    <context behavior="subtree" />
+                </symbol>
                 <starts-with>
                     <expression>&quot;</expression>
                     <capture number="0" name="nix.string.quoted.double" />
                 </starts-with>
                 <ends-with>
-                    <expression>&quot;|(?:(?&lt;!\\)$)</expression>
+                    <expression>&quot;</expression>
                     <capture number="0" name="nix.string.quoted.double" />
                 </ends-with>
                 <subscopes>
