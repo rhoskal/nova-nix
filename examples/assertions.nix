@@ -11,51 +11,51 @@ assert pythonBindings -> swig != null || swig.pythonSupport;
 assert javaSwigBindings -> swig != null && swig.javaSupport;
 assert javahlBindings -> j2sdk != null;
 
-arithemtic = [
-  (3 > -2)
-  #> true
-  
-  (2 < 3)
-  #> false
-  
-  (2 <= 3)
-  #> true
-  
-  (3 >= 1)
-  #> true
-  
-  (3 / 3)
-  #> 1
-  
-  ({ a = 1; } // { b = 2; })
-  #> { a = 1; b = 2; }
-  
-  (4 != 5)
-  #> true
-  
-  (3 * 5)
-  #> 15
-  
-  (!true)
-  #> false
-  
-  (5 - 4)
-  #> 1
-  
-  (3 + 4)
-  #> 7
-  
-  ([ 1 2 ] ++ [ 3 4 ])
-  #> [ 1 2 3 4 ]
-  
-  (true || false)
-  #> true
-  
-  (true && false)
-  #> false
-]
+let
+  arithemtic = [
+    (3 > -2)
+    #> true
 
-stdenv.mkDerivation {
+    (2 < 3)
+    #> false
+
+    (2 <= 3)
+    #> true
+
+    (3 >= 1)
+    #> true
+
+    (3 / 3)
+    #> 1
+
+    ({ a = 1; } // { b = 2; })
+    #> { a = 1; b = 2; }
+
+    (4 != 5)
+    #> true
+
+    (3 * 5)
+    #> 15
+
+    (!true)
+    #> false
+
+    (5 - 4)
+    #> 1
+
+    (3 + 4)
+    #> 7
+
+    ([ 1 2 ] ++ [ 3 4 ])
+    #> [ 1 2 3 4 ]
+
+    (true || false)
+    #> true
+
+    (true && false)
+    #> false
+  ];
+in stdenv.mkDerivation {
   name = "subversion-1.1.1";
   #...
   openssl = if sslSupport then openssl else null;
