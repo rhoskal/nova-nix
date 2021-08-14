@@ -13,7 +13,7 @@
 
 ### Fixes
 
-- `[syntax]` Improve variables declarations for better theming. ([#34](https://github.com/hansjhoffman/nova-nix/pull/43))
+- `[syntax]` Improve variables declarations for better theming. ([#34](https://github.com/hansjhoffman/nova-nix/pull/34))
 - `[syntax]` Allow 2 dots for local path strings. ([#33](https://github.com/hansjhoffman/nova-nix/pull/33))
 - `[syntax]` Ensure div operator is followed by space. ([#31](https://github.com/hansjhoffman/nova-nix/pull/31))
 - `[syntax]` Add highlighting for variable references. ([#20](https://github.com/hansjhoffman/nova-nix/pull/20))
