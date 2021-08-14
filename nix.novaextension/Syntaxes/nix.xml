@@ -425,9 +425,18 @@
                 <expression>(\/)(?:\h)</expression>
                 <capture number="1" name="nix.operator.div" />
             </scope>
+            
             <scope name="nix.operator.qmark">
                 <!-- ? -->
                 <expression>(\?)</expression>
+            </scope>
+            <scope name="nix.operator.at">
+                <!-- @ -->
+                <expression>(@)</expression>
+            </scope>
+            <scope name="nix.operator.ellipses">
+                <!-- ... -->
+                <expression>(\.{3})</expression>
             </scope>
             
             <scope name="nix.colon">
