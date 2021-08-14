@@ -120,6 +120,11 @@
                     </scope>
                 </subscopes>
             </scope>
+            <scope name="nix.definition.constant.local">
+                <expression>([A-Za-z0-9_\-]+)\h*(\=)(?![&gt;\=])</expression>
+                <capture number="1" name="nix.identifier.constant" />
+                <capture number="2" name="nix.operator" />
+            </scope>
         </collection>
         
         <!-- 
@@ -193,6 +198,7 @@
                 </ends-with>
                 <subscopes>
                     <include syntax="self" collection="comments" />
+                    <include syntax="self" collection="definitions" />
                     <include syntax="self" collection="values" />
                     <include syntax="self" collection="identifiers" />
                     <include syntax="self" collection="syntax" />
@@ -212,6 +218,7 @@
                 </ends-with>
                 <subscopes>
                     <include syntax="self" collection="comments" />
+                    <include syntax="self" collection="definitions" />
                     <include syntax="self" collection="keywords" />
                     <include syntax="self" collection="values" />
                     <include syntax="self" collection="identifiers" />
@@ -231,19 +238,6 @@
             o888o `Y8bod88P" `Y8bod8P' o888o o888o   "888" o888o o888o   o888o `Y8bod8P' d888b    8""888P' 
         -->
         <collection name="identifiers">
-            <scope name="nix.assignments">
-                <expression>
-                    (?x:               # turn on extended mode, allows arbitrary whitespace
-                       \s*             # whitespace
-                       ([A-Za-z0-9_]+) # normal characters
-                       [ \t]*          # some ammount of non-linebreak whitespace
-                       (\=)            # equals sign
-                       (?![&gt;\=])    # negative lookahead not another operator
-                    )
-                </expression>
-                <capture number="1" name="nix.identifier.property" />
-                <capture number="2" name="nix.operator" />
-            </scope>
             <scope name="nix.identifier.core.function">
                 <strings>
                     <string>import</string>
