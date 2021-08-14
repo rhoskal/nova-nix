@@ -1,3 +1,23 @@
+## v0.7.0 - 2021-08-14
+
+### Chore & Maintenance
+
+- `[core]` Update extension & dev dependencies
+
+### Features
+
+- `[syntax]` Add new operators (@ and ellipses). ([#32](https://github.com/hansjhoffman/nova-nix/pull/32))
+- `[syntax]` Add collapsing to multiline strings. ([#30](https://github.com/hansjhoffman/nova-nix/pull/30))
+- `[syntax]` Add more punctuation for better theming. ([#28](https://github.com/hansjhoffman/nova-nix/pull/28))
+- `[core]` Add shortcut for formatting command `opt-shift-f`. ([#27](https://github.com/hansjhoffman/nova-nix/pull/27))
+
+### Fixes
+
+- `[syntax]` Improve variables declarations for better theming. ([#34](https://github.com/hansjhoffman/nova-nix/pull/43))
+- `[syntax]` Allow 2 dots for local path strings. ([#33](https://github.com/hansjhoffman/nova-nix/pull/33))
+- `[syntax]` Ensure div operator is followed by space. ([#31](https://github.com/hansjhoffman/nova-nix/pull/31))
+- `[syntax]` Add highlighting for variable references. ([#20](https://github.com/hansjhoffman/nova-nix/pull/20))
+
 ## v0.6.0 - 2021-07-30
 
 ### Chore & Maintenance
