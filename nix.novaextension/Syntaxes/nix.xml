@@ -122,7 +122,7 @@
             </scope>
             <scope name="nix.definition.constant.local">
                 <expression>([A-Za-z0-9_\-]+)\h*(\=)(?![&gt;\=])</expression>
-                <capture number="1" name="nix.identifier.constant" />
+                <capture number="1" name="nix.identifier.constant.name" />
                 <capture number="2" name="nix.operator" />
             </scope>
         </collection>
@@ -428,7 +428,7 @@
                 <!-- @ -->
                 <expression>(@)</expression>
             </scope>
-            <scope name="nix.operator.ellipses">
+            <scope name="nix.operator.spread">
                 <!-- ... -->
                 <expression>(\.{3})</expression>
             </scope>
