@@ -6,8 +6,8 @@
 
 ### Features
 
-- `[syntax]` Add new operators (@ and ellipses). ([#32](https://github.com/hansjhoffman/nova-nix/pull/32))
-- `[syntax]` Add collapsing to multiline strings. ([#30](https://github.com/hansjhoffman/nova-nix/pull/30))
+- `[syntax]` Add new operators (`@` and `...`). ([#32](https://github.com/hansjhoffman/nova-nix/pull/32))
+- `[syntax]` Add folding to multiline strings. ([#30](https://github.com/hansjhoffman/nova-nix/pull/30))
 - `[syntax]` Add more punctuation for better theming. ([#28](https://github.com/hansjhoffman/nova-nix/pull/28))
 - `[core]` Add shortcut for formatting command `opt-shift-f`. ([#27](https://github.com/hansjhoffman/nova-nix/pull/27))
 
