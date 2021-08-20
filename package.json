@@ -21,8 +21,7 @@
     "format:xml": "make format-xml",
     "lint": "make lint",
     "lint:fix": "make lint-fix",
-    "prepare": "is-ci || husky install",
-    "watch": "make watch"
+    "prepare": "is-ci || husky install"
   },
   "dependencies": {
     "fp-ts": "^2.11.1",
