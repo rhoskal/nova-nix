@@ -63,8 +63,12 @@ format-xml: ## Format xml files
 
 .PHONY: lint
 lint: ## Lint code
-	yarn eslint 'src/**/*.ts' --fix
+	yarn eslint 'src/**/*.ts'
 
-.PHONY: lint
+.PHONY: lint-fix
 lint-fix: ## Lint code w/ fixes
 	yarn eslint 'src/**/*.ts' --fix
+
+.PHONY: test
+test: ## Test code
+	yarn jest
