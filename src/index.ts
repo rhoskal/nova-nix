@@ -8,27 +8,13 @@ import * as D from "io-ts/Decoder";
 import { Lens } from "monocle-ts";
 import { match } from "ts-pattern";
 
+import { selectFormatterPath, selectFormatOnSave } from "./selectors";
 import { isFalse } from "./typeGuards";
+import { ExtensionConfigKeys, UserPreferences } from "./types";
 
 /*
  * Types
  */
-
-enum ExtensionConfigKeys {
-  FormatterPath = "hansjhoffman.nix.config.nixFormatPath",
-  FormatOnSave = "hansjhoffman.nix.config.formatOnSave",
-  FormatDocument = "hansjhoffman.nix.commands.formatDocument",
-}
-
-interface Preferences {
-  readonly formatterPath: O.Option<string>;
-  readonly formatOnSave: O.Option<boolean>;
-}
-
-interface UserPreferences {
-  readonly workspace: Readonly<Preferences>;
-  readonly global: Readonly<Preferences>;
-}
 
 interface InvokeFormatterError {
   readonly _tag: "invokeFormatterError";
@@ -109,31 +95,6 @@ const globalConfigsLens = Lens.fromPath<UserPreferences>()(["global"]);
 
 const extensionDisposable: CompositeDisposable = new CompositeDisposable();
 let saveListeners: Map<string, Disposable> = new Map();
-
-/**
- * Gets a value giving precedence to workspace over global extension values.
- * @param {UserPreferences} preferences - extension settings
- */
-const selectFormatOnSave = (preferences: UserPreferences): boolean => {
-  const workspace = workspaceConfigsLens.get(preferences);
-  const global = globalConfigsLens.get(preferences);
-
-  return O.isSome(workspace.formatOnSave) || O.isSome(global.formatOnSave);
-};
-
-/**
- * Gets a value giving precedence to workspace over global extension values.
- * @param {UserPreferences} preferences - extension settings
- */
-const selectFormatterPath = (preferences: UserPreferences): O.Option<string> => {
-  const workspace = workspaceConfigsLens.get(preferences);
-  const global = globalConfigsLens.get(preferences);
-
-  return pipe(
-    workspace.formatterPath,
-    O.alt(() => global.formatterPath),
-  );
-};
 
 const addSaveListener = (editor: TextEditor): void => {
   pipe(
