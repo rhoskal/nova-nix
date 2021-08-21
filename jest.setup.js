@@ -1,3 +1,3 @@
 global.nova = {
-  localize: jest.fn(),
+  localize: jest.fn((x) => x),
 };
