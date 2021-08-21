@@ -7,7 +7,7 @@ const mockEditor = {
   document: {
     path: "path/to/some/file",
   },
-} as TextEditor;
+} as unknown;
 
 describe("[Commands] Format Document", () => {
   test("Failure - No formatter", () => {
@@ -24,7 +24,7 @@ describe("[Commands] Format Document", () => {
 
     const consoleSpy = jest.spyOn(console, "log").mockImplementation();
 
-    formatDocument(mockPreferences)(mockEditor);
+    formatDocument(mockPreferences)(mockEditor as TextEditor);
 
     expect(consoleSpy).toHaveBeenCalledTimes(1);
     expect(console.log).toHaveBeenCalledWith("Skipping... No formatter set.");
@@ -46,7 +46,7 @@ describe("[Commands] Format Document", () => {
 
     const consoleSpy = jest.spyOn(console, "error").mockImplementation();
 
-    formatDocument(mockPreferences)(mockEditor);
+    formatDocument(mockPreferences)(mockEditor as TextEditor);
 
     expect(consoleSpy).toHaveBeenCalledTimes(1);
     expect(console.error).toHaveBeenCalledWith("Failed to format the document.");
