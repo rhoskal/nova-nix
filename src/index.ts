@@ -1,25 +1,14 @@
-import * as E from "fp-ts/Either";
 import * as M from "fp-ts/Map";
 import * as O from "fp-ts/Option";
-import * as TE from "fp-ts/TaskEither";
 import { constVoid, pipe } from "fp-ts/function";
 import * as Str from "fp-ts/string";
 import * as D from "io-ts/Decoder";
 import { Lens } from "monocle-ts";
-import { match } from "ts-pattern";
 
-import { selectFormatterPath, selectFormatOnSave } from "./selectors";
+import { formatDocument } from "./commands/formatDocument";
+import { selectFormatOnSave } from "./selectors";
 import { isFalse } from "./typeGuards";
 import { ExtensionConfigKeys, UserPreferences } from "./types";
-
-/*
- * Types
- */
-
-interface InvokeFormatterError {
-  readonly _tag: "invokeFormatterError";
-  readonly reason: string;
-}
 
 /*
  * Helpers
@@ -34,31 +23,6 @@ const showNotification = (body: string): void => {
 
     nova.notifications.add(notification);
   }
-};
-
-const safeFormat = (
-  editor: TextEditor,
-  formatterPath: string,
-): TE.TaskEither<InvokeFormatterError, void> => {
-  const documentPath = editor.document.path;
-
-  return TE.tryCatch<InvokeFormatterError, void>(
-    () => {
-      return new Promise<void>((resolve, reject) => {
-        const process = new Process("/usr/bin/env", {
-          args: [`${formatterPath}`, `${documentPath}`],
-        });
-
-        process.onDidExit((status) => (status === 0 ? resolve() : reject()));
-
-        process.start();
-      });
-    },
-    () => ({
-      _tag: "invokeFormatterError",
-      reason: `${nova.localize("Failed to format the document")}.`,
-    }),
-  );
 };
 
 /*
@@ -101,9 +65,10 @@ const addSaveListener = (editor: TextEditor): void => {
     O.fromNullable(editor.document.syntax),
     O.chain(O.fromPredicate((syntax) => Str.Eq.equals(syntax, "nix"))),
     O.fold(constVoid, (_) => {
-      saveListeners = M.upsertAt(Str.Eq)(editor.document.uri, editor.onWillSave(formatDocument))(
-        saveListeners,
-      );
+      saveListeners = M.upsertAt(Str.Eq)(
+        editor.document.uri,
+        editor.onWillSave(formatDocument(preferences)),
+      )(saveListeners);
     }),
   );
 };
@@ -115,27 +80,6 @@ const clearSaveListeners = (): void => {
   );
 
   saveListeners = new Map();
-};
-
-const formatDocument = (editor: TextEditor): void => {
-  pipe(
-    selectFormatterPath(preferences),
-    O.fold(
-      () => console.log(`${nova.localize("Skipping")}... ${nova.localize("No formatter set")}.`),
-      (path) => {
-        safeFormat(editor, path)().then(
-          E.fold(
-            (err) => {
-              return match(err)
-                .with({ _tag: "invokeFormatterError" }, ({ reason }) => console.error(reason))
-                .exhaustive();
-            },
-            () => console.log(`${nova.localize("Formatted")} ${editor.document.path}`),
-          ),
-        );
-      },
-    ),
-  );
 };
 
 export const activate = (): void => {
@@ -153,7 +97,7 @@ export const activate = (): void => {
   );
 
   extensionDisposable.add(
-    nova.commands.register(ExtensionConfigKeys.FormatDocument, formatDocument),
+    nova.commands.register(ExtensionConfigKeys.FormatDocument, formatDocument(preferences)),
   );
 
   extensionDisposable.add(
