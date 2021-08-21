@@ -6,7 +6,7 @@ import { UserPreferences } from "../types";
 describe("[Selectors]", () => {
   describe("Formatter Path", () => {
     test("(N) Workspace & (N) Global", () => {
-      const preferences: UserPreferences = {
+      const mockPreferences: UserPreferences = {
         workspace: {
           formatterPath: O.none,
           formatOnSave: O.none,
@@ -17,7 +17,7 @@ describe("[Selectors]", () => {
         },
       };
 
-      const actual: O.Option<string> = selectFormatterPath(preferences);
+      const actual: O.Option<string> = selectFormatterPath(mockPreferences);
       const expected: O.Option<string> = O.none;
 
       expect(actual).toStrictEqual(expected);
@@ -26,7 +26,7 @@ describe("[Selectors]", () => {
     test("(N) Workspace & (Y) Global", () => {
       const globalPath: string = "/path/to/global/formatter";
 
-      const preferences: UserPreferences = {
+      const mockPreferences: UserPreferences = {
         workspace: {
           formatterPath: O.none,
           formatOnSave: O.none,
@@ -37,7 +37,7 @@ describe("[Selectors]", () => {
         },
       };
 
-      const actual: O.Option<string> = selectFormatterPath(preferences);
+      const actual: O.Option<string> = selectFormatterPath(mockPreferences);
       const expected: O.Option<string> = O.some(globalPath);
 
       expect(actual).toStrictEqual(expected);
@@ -46,7 +46,7 @@ describe("[Selectors]", () => {
     test("(Y) Workspace & (N) Global", () => {
       const workspacePath: string = "/path/to/workspace/formatter";
 
-      const preferences: UserPreferences = {
+      const mockPreferences: UserPreferences = {
         workspace: {
           formatterPath: O.some(workspacePath),
           formatOnSave: O.none,
@@ -57,7 +57,7 @@ describe("[Selectors]", () => {
         },
       };
 
-      const actual: O.Option<string> = selectFormatterPath(preferences);
+      const actual: O.Option<string> = selectFormatterPath(mockPreferences);
       const expected: O.Option<string> = O.some(workspacePath);
 
       expect(actual).toStrictEqual(expected);
@@ -67,7 +67,7 @@ describe("[Selectors]", () => {
       const workspacePath: string = "/path/to/workspace/formatter";
       const globalPath: string = "/path/to/global/formatter";
 
-      const preferences: UserPreferences = {
+      const mockPreferences: UserPreferences = {
         workspace: {
           formatterPath: O.some(workspacePath),
           formatOnSave: O.none,
@@ -78,7 +78,7 @@ describe("[Selectors]", () => {
         },
       };
 
-      const actual: O.Option<string> = selectFormatterPath(preferences);
+      const actual: O.Option<string> = selectFormatterPath(mockPreferences);
       const expected: O.Option<string> = O.some(workspacePath);
 
       expect(actual).toStrictEqual(expected);
@@ -87,7 +87,7 @@ describe("[Selectors]", () => {
 
   describe("Format on Save", () => {
     test("(N) Workspace & (N) Global", () => {
-      const preferences: UserPreferences = {
+      const mockPreferences: UserPreferences = {
         workspace: {
           formatterPath: O.none,
           formatOnSave: O.none,
@@ -98,7 +98,7 @@ describe("[Selectors]", () => {
         },
       };
 
-      const actual: boolean = selectFormatOnSave(preferences);
+      const actual: boolean = selectFormatOnSave(mockPreferences);
       const expected: boolean = false;
 
       expect(actual).toBe(expected);
@@ -107,7 +107,7 @@ describe("[Selectors]", () => {
     test("(N) Workspace & (Y) Global", () => {
       const globalFormatOnSave: boolean = true;
 
-      const preferences: UserPreferences = {
+      const mockPreferences: UserPreferences = {
         workspace: {
           formatterPath: O.none,
           formatOnSave: O.none,
@@ -118,7 +118,7 @@ describe("[Selectors]", () => {
         },
       };
 
-      const actual: boolean = selectFormatOnSave(preferences);
+      const actual: boolean = selectFormatOnSave(mockPreferences);
       const expected: boolean = true;
 
       expect(actual).toBe(expected);
@@ -127,7 +127,7 @@ describe("[Selectors]", () => {
     test("(Y) Workspace & (N) Global", () => {
       const workspaceFormatOnSave: boolean = true;
 
-      const preferences: UserPreferences = {
+      const mockPreferences: UserPreferences = {
         workspace: {
           formatterPath: O.none,
           formatOnSave: O.some(workspaceFormatOnSave),
@@ -138,7 +138,7 @@ describe("[Selectors]", () => {
         },
       };
 
-      const actual: boolean = selectFormatOnSave(preferences);
+      const actual: boolean = selectFormatOnSave(mockPreferences);
       const expected: boolean = true;
 
       expect(actual).toBe(expected);
@@ -148,7 +148,7 @@ describe("[Selectors]", () => {
       const globalFormatOnSave: boolean = true;
       const workspaceFormatOnSave: boolean = true;
 
-      const preferences: UserPreferences = {
+      const mockPreferences: UserPreferences = {
         workspace: {
           formatterPath: O.none,
           formatOnSave: O.some(workspaceFormatOnSave),
@@ -159,7 +159,7 @@ describe("[Selectors]", () => {
         },
       };
 
-      const actual: boolean = selectFormatOnSave(preferences);
+      const actual: boolean = selectFormatOnSave(mockPreferences);
       const expected: boolean = true;
 
       expect(actual).toBe(expected);
