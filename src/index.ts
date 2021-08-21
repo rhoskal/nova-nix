@@ -1,39 +1,14 @@
-import * as E from "fp-ts/Either";
 import * as M from "fp-ts/Map";
 import * as O from "fp-ts/Option";
-import * as TE from "fp-ts/TaskEither";
 import { constVoid, pipe } from "fp-ts/function";
 import * as Str from "fp-ts/string";
 import * as D from "io-ts/Decoder";
 import { Lens } from "monocle-ts";
-import { match } from "ts-pattern";
 
+import { formatDocument } from "./commands/formatDocument";
+import { selectFormatOnSave } from "./selectors";
 import { isFalse } from "./typeGuards";
-
-/*
- * Types
- */
-
-enum ExtensionConfigKeys {
-  FormatterPath = "hansjhoffman.nix.config.nixFormatPath",
-  FormatOnSave = "hansjhoffman.nix.config.formatOnSave",
-  FormatDocument = "hansjhoffman.nix.commands.formatDocument",
-}
-
-interface Preferences {
-  readonly formatterPath: O.Option<string>;
-  readonly formatOnSave: O.Option<boolean>;
-}
-
-interface UserPreferences {
-  readonly workspace: Readonly<Preferences>;
-  readonly global: Readonly<Preferences>;
-}
-
-interface InvokeFormatterError {
-  readonly _tag: "invokeFormatterError";
-  readonly reason: string;
-}
+import { ExtensionConfigKeys, UserPreferences } from "./types";
 
 /*
  * Helpers
@@ -48,31 +23,6 @@ const showNotification = (body: string): void => {
 
     nova.notifications.add(notification);
   }
-};
-
-const safeFormat = (
-  editor: TextEditor,
-  formatterPath: string,
-): TE.TaskEither<InvokeFormatterError, void> => {
-  const documentPath = editor.document.path;
-
-  return TE.tryCatch<InvokeFormatterError, void>(
-    () => {
-      return new Promise<void>((resolve, reject) => {
-        const process = new Process("/usr/bin/env", {
-          args: [`${formatterPath}`, `${documentPath}`],
-        });
-
-        process.onDidExit((status) => (status === 0 ? resolve() : reject()));
-
-        process.start();
-      });
-    },
-    () => ({
-      _tag: "invokeFormatterError",
-      reason: `${nova.localize("Failed to format the document")}.`,
-    }),
-  );
 };
 
 /*
@@ -110,39 +60,15 @@ const globalConfigsLens = Lens.fromPath<UserPreferences>()(["global"]);
 const extensionDisposable: CompositeDisposable = new CompositeDisposable();
 let saveListeners: Map<string, Disposable> = new Map();
 
-/**
- * Gets a value giving precedence to workspace over global extension values.
- * @param {UserPreferences} preferences - extension settings
- */
-const selectFormatOnSave = (preferences: UserPreferences): boolean => {
-  const workspace = workspaceConfigsLens.get(preferences);
-  const global = globalConfigsLens.get(preferences);
-
-  return O.isSome(workspace.formatOnSave) || O.isSome(global.formatOnSave);
-};
-
-/**
- * Gets a value giving precedence to workspace over global extension values.
- * @param {UserPreferences} preferences - extension settings
- */
-const selectFormatterPath = (preferences: UserPreferences): O.Option<string> => {
-  const workspace = workspaceConfigsLens.get(preferences);
-  const global = globalConfigsLens.get(preferences);
-
-  return pipe(
-    workspace.formatterPath,
-    O.alt(() => global.formatterPath),
-  );
-};
-
 const addSaveListener = (editor: TextEditor): void => {
   pipe(
     O.fromNullable(editor.document.syntax),
     O.chain(O.fromPredicate((syntax) => Str.Eq.equals(syntax, "nix"))),
     O.fold(constVoid, (_) => {
-      saveListeners = M.upsertAt(Str.Eq)(editor.document.uri, editor.onWillSave(formatDocument))(
-        saveListeners,
-      );
+      saveListeners = M.upsertAt(Str.Eq)(
+        editor.document.uri,
+        editor.onWillSave(formatDocument(preferences)),
+      )(saveListeners);
     }),
   );
 };
@@ -154,27 +80,6 @@ const clearSaveListeners = (): void => {
   );
 
   saveListeners = new Map();
-};
-
-const formatDocument = (editor: TextEditor): void => {
-  pipe(
-    selectFormatterPath(preferences),
-    O.fold(
-      () => console.log(`${nova.localize("Skipping")}... ${nova.localize("No formatter set")}.`),
-      (path) => {
-        safeFormat(editor, path)().then(
-          E.fold(
-            (err) => {
-              return match(err)
-                .with({ _tag: "invokeFormatterError" }, ({ reason }) => console.error(reason))
-                .exhaustive();
-            },
-            () => console.log(`${nova.localize("Formatted")} ${editor.document.path}`),
-          ),
-        );
-      },
-    ),
-  );
 };
 
 export const activate = (): void => {
@@ -192,7 +97,7 @@ export const activate = (): void => {
   );
 
   extensionDisposable.add(
-    nova.commands.register(ExtensionConfigKeys.FormatDocument, formatDocument),
+    nova.commands.register(ExtensionConfigKeys.FormatDocument, formatDocument(preferences)),
   );
 
   extensionDisposable.add(
