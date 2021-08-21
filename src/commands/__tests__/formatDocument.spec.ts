@@ -9,7 +9,7 @@ const editor = {
   },
 } as TextEditor;
 
-describe("[Command] Format Document", () => {
+describe("[Commands] Format Document", () => {
   test("Failure - No formatter", () => {
     const preferences: UserPreferences = {
       workspace: {
@@ -21,6 +21,7 @@ describe("[Command] Format Document", () => {
         formatterPath: O.none,
       },
     };
+
     const consoleSpy = jest.spyOn(console, "log").mockImplementation();
 
     formatDocument(preferences)(editor);
@@ -31,7 +32,7 @@ describe("[Command] Format Document", () => {
     consoleSpy.mockRestore();
   });
 
-  test.only("Failure - General Error", () => {
+  test.skip("Failure - General Error", () => {
     const preferences: UserPreferences = {
       workspace: {
         formatOnSave: O.none,
@@ -42,6 +43,7 @@ describe("[Command] Format Document", () => {
         formatterPath: O.none,
       },
     };
+
     const consoleSpy = jest.spyOn(console, "error").mockImplementation();
 
     formatDocument(preferences)(editor);
