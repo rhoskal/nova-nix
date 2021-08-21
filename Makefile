@@ -72,3 +72,7 @@ lint-fix: ## Lint code w/ fixes
 .PHONY: test
 test: ## Test code
 	yarn jest
+
+.PHONY: test-watch
+test-watch: ## Test code
+	yarn jest --watch
