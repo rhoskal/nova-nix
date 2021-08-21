@@ -3,15 +3,15 @@ import * as O from "fp-ts/Option";
 import { formatDocument } from "../formatDocument";
 import { UserPreferences } from "../../types";
 
-const editor = {
+const mockEditor = {
   document: {
     path: "path/to/some/file",
   },
-} as TextEditor;
+} as unknown;
 
 describe("[Commands] Format Document", () => {
   test("Failure - No formatter", () => {
-    const preferences: UserPreferences = {
+    const mockPreferences: UserPreferences = {
       workspace: {
         formatOnSave: O.none,
         formatterPath: O.none,
@@ -24,7 +24,7 @@ describe("[Commands] Format Document", () => {
 
     const consoleSpy = jest.spyOn(console, "log").mockImplementation();
 
-    formatDocument(preferences)(editor);
+    formatDocument(mockPreferences)(mockEditor as TextEditor);
 
     expect(consoleSpy).toHaveBeenCalledTimes(1);
     expect(console.log).toHaveBeenCalledWith("Skipping... No formatter set.");
@@ -33,7 +33,7 @@ describe("[Commands] Format Document", () => {
   });
 
   test.skip("Failure - General Error", () => {
-    const preferences: UserPreferences = {
+    const mockPreferences: UserPreferences = {
       workspace: {
         formatOnSave: O.none,
         formatterPath: O.some("path/to/some/formatter"),
@@ -46,7 +46,7 @@ describe("[Commands] Format Document", () => {
 
     const consoleSpy = jest.spyOn(console, "error").mockImplementation();
 
-    formatDocument(preferences)(editor);
+    formatDocument(mockPreferences)(mockEditor as TextEditor);
 
     expect(consoleSpy).toHaveBeenCalledTimes(1);
     expect(console.error).toHaveBeenCalledWith("Failed to format the document.");
