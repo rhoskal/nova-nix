@@ -199,6 +199,7 @@
                 <subscopes>
                     <include syntax="self" collection="comments" />
                     <include syntax="self" collection="definitions" />
+                    <include syntax="self" collection="keywords" />
                     <include syntax="self" collection="values" />
                     <include syntax="self" collection="identifiers" />
                     <include syntax="self" collection="syntax" />
