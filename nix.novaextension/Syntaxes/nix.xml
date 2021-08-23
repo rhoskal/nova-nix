@@ -249,7 +249,7 @@
                 <expression>
                     (?x:                       # turn on extended mode, allows arbitrary whitespace
                         (
-                            [A-Za-z0-9_\-\']+  # Any word character
+                            [A-Za-z0-9_\']+    # Any word character
                             |(?&lt;=\w)-       # or a hyphen (-) but only if proceeded by a word character
                         )
                     )
