@@ -1,3 +1,20 @@
+## v0.8.0 - 2021-08-23
+
+### Chore & Maintenance
+
+- `[core]` Add tests. ([#39](https://github.com/hansjhoffman/nova-nix/pull/39))
+- `[core]` Switch to esbuild 🚀. ([#37](https://github.com/hansjhoffman/nova-nix/pull/37))
+- `[core]` Update extension & dev dependencies
+
+### Features
+
+- `[syntax]` Add folding to let blocks. ([#43](https://github.com/hansjhoffman/nova-nix/pull/43))
+
+### Fixes
+
+- `[syntax]` Add keywords to collection list. ([#42](https://github.com/hansjhoffman/nova-nix/pull/42))
+- `[syntax]` Allow apostrophe in identifiers. ([#41](https://github.com/hansjhoffman/nova-nix/pull/41))
+
 ## v0.7.0 - 2021-08-14
 
 ### Chore & Maintenance
