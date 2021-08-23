@@ -246,10 +246,10 @@
             </scope>
             <scope name="nix.reference">
                 <expression>
-                    (?x:                   # turn on extended mode, allows arbitrary whitespace
+                    (?x:                       # turn on extended mode, allows arbitrary whitespace
                         (
-                            \w+            # Any word character
-                            |(?&lt;=\w)-   # or a hyphen (-) but only if proceeded by a word character
+                            [A-Za-z0-9_\-\']+  # Any word character
+                            |(?&lt;=\w)-       # or a hyphen (-) but only if proceeded by a word character
                         )
                     )
                 </expression>
