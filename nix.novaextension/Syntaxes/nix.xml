@@ -125,6 +125,27 @@
                 <capture number="1" name="nix.identifier.constant.name" />
                 <capture number="2" name="nix.operator" />
             </scope>
+            <scope name="nix.definition.let">
+                <symbol type="block">
+                    <context behavior="subtree" />
+                </symbol>
+                <starts-with>
+                    <expression>\b(let)\b</expression>
+                    <capture number="1" name="nix.keyword" />
+                </starts-with>
+                <ends-with>
+                    <expression>\b(in)\b</expression>
+                    <capture number="1" name="nix.keyword" />
+                </ends-with>
+                <subscopes>
+                    <include syntax="self" collection="comments" />
+                    <include syntax="self" collection="definitions" />
+                    <include syntax="self" collection="keywords" />
+                    <include syntax="self" collection="values" />
+                    <include syntax="self" collection="identifiers" />
+                    <include syntax="self" collection="syntax" />
+                </subscopes>
+            </scope>
         </collection>
         
         <!-- 
