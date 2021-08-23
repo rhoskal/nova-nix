@@ -1,6 +1,6 @@
 {
   "name": "nova-nix",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Provides syntax highlighting and formatting for Nix.",
   "main": "src/index.ts",
   "author": "Hans Hoffman",
