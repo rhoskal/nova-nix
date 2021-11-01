@@ -25,7 +25,7 @@
     "test": "make test"
   },
   "dependencies": {
-    "fp-ts": "^2.11.4",
+    "fp-ts": "^2.11.5",
     "io-ts": "^2.2.16",
     "monocle-ts": "^2.3.11",
     "ts-pattern": "^3.3.3"
