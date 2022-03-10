@@ -3,7 +3,4 @@ let
   pkgs = import sources.nixpkgs { };
 in pkgs.mkShell {
   buildInputs = [ pkgs.git pkgs.nixfmt pkgs.nodejs-16_x pkgs.yarn ];
-  shellHook = ''
-    export PATH="./node_modules/.bin:$PATH"
-  '';
 }
