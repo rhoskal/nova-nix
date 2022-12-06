@@ -1,6 +1,6 @@
 # Nix language support for Nova
 
-⚠️ No longer maintained ⚠️
+⚠️ No longer maintained ⚠️ Please checkout another community extension [here](https://extensions.panic.com/extensions/org.flyx/org.flyx.nix/). 
 
 This plugin provides **Nix** syntax highlighting and formatting support for the new [Nova editor from Panic](https://panic.com/nova/). It also provides formatting support which relies on the installation of [nixfmt](https://github.com/serokell/nixfmt).
 
